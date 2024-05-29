@@ -1,10 +1,14 @@
-﻿namespace devhost
+﻿using DeviceHost.Core;
+
+namespace devhost
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            using var server = new DeviceServer();
+            Console.WriteLine("Starting server");
+            await server.Run();
         }
     }
 }
