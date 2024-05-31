@@ -56,10 +56,6 @@ def send_and_receive(message: str, timeout: int = 10) -> str:
     
     return response
 
-# Example usage:
-response = send_and_receive('example.com', 'Hello, World!')
-print(response)
-
 def main():
     message = 'Hello, Local Server!'
     
