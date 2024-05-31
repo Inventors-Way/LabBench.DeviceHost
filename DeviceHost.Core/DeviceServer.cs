@@ -6,13 +6,13 @@ namespace DeviceHost.Core
 {
     public class DeviceServer : IDisposable
     {
-        public int Port { get; set; } = 8080;
+        public int Port { get; set; } = 9797;
 
-        public IPAddress Address { get; set; } = IPAddress.Any;
+        public IPAddress Address { get; set; } = IPAddress.Parse("127.0.0.1");
 
         public async Task Run()
         {
-            IPEndPoint localEndPoint = new IPEndPoint(Address, Port);
+            IPEndPoint localEndPoint = new(Address, Port);
 
             // Create a TCP socket
             using Socket listener = new(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
