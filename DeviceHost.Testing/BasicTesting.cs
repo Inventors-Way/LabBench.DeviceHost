@@ -8,7 +8,14 @@ namespace DeviceHost.Testing
     public class BasicTesting
     {
         [TestMethod]
-        public void Ping()
+        public void LoadScript()
+        {
+            var script = TestUtility.GetScript("Open.txt");
+            Console.WriteLine(script);
+        }
+
+        [TestMethod]
+        public void T01_Ping()
         {
             string serverIp = "127.0.0.1"; // IP address of the server
             int serverPort = 9797;        // Port of the server
