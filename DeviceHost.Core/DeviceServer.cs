@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Serilog;
 
 namespace DeviceHost.Core
 {
@@ -25,7 +26,7 @@ namespace DeviceHost.Core
                 listener.Bind(localEndPoint);
                 listener.Listen(10);
 
-                Console.WriteLine($"Listening on {localEndPoint}...");
+                Log.Information($"Listening on {localEndPoint}...");
 
                 while (true)
                 {

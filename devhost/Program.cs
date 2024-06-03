@@ -26,20 +26,18 @@ namespace devhost
         {
             if (string.IsNullOrEmpty(options.LogFile))
             {
-                Console.WriteLine("Configuration logging: Console");
-
                 Log.Logger = new LoggerConfiguration()
                     .WriteTo.Console()
                     .CreateLogger();
+                Log.Information("Configuration logging: Console");
             }
             else
             {
-                Console.WriteLine($"Configuration logging: Console, File ({options.LogFile})");
-
                 Log.Logger = new LoggerConfiguration()
                     .WriteTo.Console()
                     .WriteTo.File(options.LogFile, rollingInterval: RollingInterval.Day)
                     .CreateLogger();
+                Log.Information("Configuration logging: Console, File ({LogFile})", options.LogFile);
             }
         }
 
@@ -53,10 +51,7 @@ namespace devhost
                 {
                     ConfigureLogging(options);
 
-                    Console.WriteLine("Starting server:");
-                    Console.WriteLine($"   api-key : {options.ApiKey}");
-                    Console.WriteLine($"   address : {options.Address}");
-                    Console.WriteLine($"   port    : {options.Port}");
+                    Log.Information("Starting server (api-key: {apiKey}, address: {adress}, port: {port})", options.ApiKey, options.Address, options.Port);
 
                     using var server = new DeviceServer()
                     {
@@ -70,7 +65,7 @@ namespace devhost
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex}");
+                Log.Error("Error: {exception}", ex);
             }
         }
     }
