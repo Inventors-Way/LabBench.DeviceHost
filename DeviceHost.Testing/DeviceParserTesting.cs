@@ -12,9 +12,9 @@ namespace DeviceHost.Testing
     {
 
         [TestMethod]
-        public void T01_GetPorts()
+        public void T01_Ports()
         {
-            string script = TestUtility.GetScript("GetPorts.txt");
+            string script = TestUtility.GetScript("Ports.txt");
             var parser = new DeviceParser();
             var result = parser.Parse(script);
 

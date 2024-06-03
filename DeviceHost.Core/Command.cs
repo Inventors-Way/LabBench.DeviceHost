@@ -65,6 +65,7 @@ namespace DeviceHost.Core
             try
             {
                 var use = new UseDirective(_lines[1]);
+                var content = _lines[2..^1];
 
                 switch (use.System)
                 {

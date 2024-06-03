@@ -17,7 +17,7 @@ namespace DeviceHost.Core.Commands
             if (parts.Length < 2)
                 throw new ArgumentException("INVALID PARAMETER SPECIFICATION");
 
-            Name = parts[0];
+            Name = parts[0].ToUpper();
 
             values = new string[parts.Length - 1];
 

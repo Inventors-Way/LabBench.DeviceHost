@@ -17,12 +17,12 @@ namespace DeviceHost.Core.Commands
             if (parts.Length == 0)
                 throw new ArgumentException("INVALID USE DIRECTIVE, WRONG LENGTH");
 
-            if (parts[0] != "USE")
+            if (parts[0].ToUpper() != "USE")
                 throw new ArgumentException("INVALID USE DIRECTIVE, DO NOT START WITH USE");
 
             if (parts.Length == 2)
             {
-                if (parts[1] != "SERVER")
+                if (parts[1].ToUpper() != "SERVER")
                     throw new ArgumentException("INVALID USE DIRECTIVE, INVALID TYPE");
 
                 System = SystemID.SERVER;
@@ -33,19 +33,14 @@ namespace DeviceHost.Core.Commands
 
             if (parts.Length == 4)
             {
-                System = parts[1] switch
+                System = parts[1].ToUpper() switch
                 {
                     "PORT" => SystemID.PORT,
                     _ => throw new ArgumentException("INVALID USE DIRECTIVE, INVALID TYPE"),
                 };
 
                 Port = parts[2];
-
-                Device = parts[3] switch
-                {
-                    "CPARPLUS" => DeviceID.CPARPlus,
-                    _ => throw new ArgumentException("INVALID USE DIRECTIVE, INVALID DEVICE CLASS"),
-                };
+                Device = parts[3].ToDevice();
 
                 return;
             }

@@ -51,7 +51,7 @@ namespace DeviceHost.Core
             if (!command.VerifyKey(ApiKey)) 
                 return "ERR:INVALID API KEY";
 
-            return "OK";
+            return command.Execute();
         }
 
 
