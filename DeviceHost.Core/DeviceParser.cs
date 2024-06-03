@@ -24,12 +24,36 @@ namespace DeviceHost.Core
 
             foreach (var match in matches)
             {
+                try
+                {
+                    if (match is not Match command)
+                        break;
 
+                    response.AppendLine(ParseCommand(command.Value));
+                }
+                catch (Exception ex)
+                {
+                    response.AppendLine($"ERR:{ex.Message}");
+                }
             }
 
             builder.Clear();
             return new ParseResult(response.ToString());
         }
+
+        private string ParseCommand(string content)
+        {
+            var command = new Command(content);
+
+            if (!command.Validate(out string errorMessage))
+                return errorMessage;
+            
+            if (!command.VerifyKey(ApiKey)) 
+                return "ERR:INVALID API KEY";
+
+            return "OK";
+        }
+
 
         private readonly StringBuilder builder = new ();
         private readonly Regex _commandPattern = new(@"START\s[\w]+;[\w\s;]*END;", RegexOptions.Compiled);
