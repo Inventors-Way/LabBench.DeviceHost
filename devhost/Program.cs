@@ -45,26 +45,33 @@ namespace devhost
 
         static async Task Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Options>(args);
-
-            if (result.Value is Options options)
+            try
             {
-                ConfigureLogging(options);
+                var result = Parser.Default.ParseArguments<Options>(args);
 
-                Console.WriteLine("Starting server:");
-                Console.WriteLine($"   api-key : {options.ApiKey}");
-                Console.WriteLine($"   address : {options.Address}");
-                Console.WriteLine($"   port    : {options.Port}");
-
-                using var server = new DeviceServer()
+                if (result.Value is Options options)
                 {
-                    ApiKey = options.ApiKey,
-                    Address = IPAddress.Parse(options.Address),
-                    Port = options.Port
-                };
+                    ConfigureLogging(options);
 
-                await server.Run();
-            };
+                    Console.WriteLine("Starting server:");
+                    Console.WriteLine($"   api-key : {options.ApiKey}");
+                    Console.WriteLine($"   address : {options.Address}");
+                    Console.WriteLine($"   port    : {options.Port}");
+
+                    using var server = new DeviceServer()
+                    {
+                        ApiKey = options.ApiKey,
+                        Address = IPAddress.Parse(options.Address),
+                        Port = options.Port
+                    };
+
+                    await server.Run();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex}");
+            }
         }
     }
 }
