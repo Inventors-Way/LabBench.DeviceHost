@@ -26,13 +26,13 @@ namespace DeviceHost.Core
                 listener.Bind(localEndPoint);
                 listener.Listen(10);
 
-                Log.Information($"Listening on {localEndPoint}...");
+                Log.Information("Device server listening on {localEndPoint}", localEndPoint);
 
                 while (true)
                 {
                     // Wait for a connection
                     Socket handler = await listener.AcceptAsync();
-                    Console.WriteLine("Client connected.");
+                    Log.Information("Client connected (remote endpoint: {endpoint}).", handler.RemoteEndPoint);
 
                     // Process the client connection
                     _ = Task.Run(() => HandleClient(handler));
@@ -40,45 +40,47 @@ namespace DeviceHost.Core
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
+                Log.Error("Exception: {exception}", ex);
             }
         }
 
-        static async Task HandleClient(Socket handler)
+        async Task HandleClient(Socket handler)
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[65535];
+            var parser = new DeviceParser()
+            {
+                ApiKey = ApiKey
+            };
+
+
             try
             {
                 while (true)
                 {
-                    // Receive data from the client
                     int bytesReceived = await handler.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
+
                     if (bytesReceived == 0)
-                    {
-                        // Client has closed the connection
                         break;
-                    }
 
                     string data = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
-                    Console.WriteLine($"Received: {data}");
+                    
+                    var response = parser.Parse(data);
 
-                    // Process the data and prepare a response
-                    string response = $"Server received: {data}";
-                    byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-
-                    // Send the response back to the client
-                    await handler.SendAsync(new ArraySegment<byte>(responseBytes), SocketFlags.None);
-                    Console.WriteLine("Response sent.");
+                    if (response.Complete)
+                    {
+                        byte[] responseBytes = Encoding.UTF8.GetBytes(response.Response);
+                        await handler.SendAsync(new ArraySegment<byte>(responseBytes), SocketFlags.None);
+                    }
                 }
 
-                // Shutdown and close the connection
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
-                Console.WriteLine("Client disconnected.");
+
+                Log.Information("Client disconnected.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in HandleClientAsync: {ex.Message}");
+                Log.Error("Exception in HandleClientAsync: {exception}", ex);
             }
             finally
             {
