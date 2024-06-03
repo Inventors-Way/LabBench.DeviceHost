@@ -10,6 +10,8 @@ namespace DeviceHost.Core
 
         public IPAddress Address { get; set; } = IPAddress.Parse("127.0.0.1");
 
+        public string ApiKey { get; set; } = "1234";
+
         public async Task Run()
         {
             IPEndPoint localEndPoint = new(Address, Port);
