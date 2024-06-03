@@ -66,6 +66,6 @@ namespace DeviceHost.Core
         }
 
         private readonly string[] _lines;
-        private readonly Regex startRegex = new Regex(@"START\s[\w]+", RegexOptions.Compiled);
+        private readonly Regex startRegex = new(@"START\s[\w]+", RegexOptions.Compiled);
     }
 }
