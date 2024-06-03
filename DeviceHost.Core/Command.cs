@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeviceHost.Core.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,8 +62,24 @@ namespace DeviceHost.Core
 
         public string Execute()
         {
+            try
+            {
+                var use = new UseDirective(_lines[1]);
 
-            return "";
+                switch (use.System)
+                {
+                    case SystemID.SERVER:
+                        break;
+                    case SystemID.PORT:
+                        break;
+                }
+
+                return "";
+            }
+            catch (Exception e) 
+            {
+                return $"ERR:{e.Message}";
+            }
         }
 
         private readonly string[] _lines;
