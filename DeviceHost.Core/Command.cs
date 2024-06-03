@@ -61,6 +61,8 @@ namespace DeviceHost.Core
 
         public string Execute()
         {
+
+            return "";
         }
 
         private readonly string[] _lines;

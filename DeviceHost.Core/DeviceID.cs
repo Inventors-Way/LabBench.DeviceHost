@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeviceHost.Core
 {
-    public enum SubSystem
+    public enum DeviceID
     {
-        SERVER,
-        PORT
+        None,
+        CPARPlus
     }
 }
