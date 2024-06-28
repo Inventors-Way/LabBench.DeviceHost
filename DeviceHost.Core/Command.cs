@@ -59,6 +59,19 @@ namespace DeviceHost.Core
                 return false;
             }
 
+            var useDirective = new UseDirective(_lines[1]);
+
+            if (!useDirective.Parse(out errorMessage))
+            {
+                return false;
+            }
+
+            System = useDirective.System;
+            Device = useDirective.Device;
+            Port = useDirective.Port;
+
+            Content = _lines[2..^1];
+
             errorMessage = string.Empty;
             return true;
         }
@@ -74,29 +87,6 @@ namespace DeviceHost.Core
                 throw new InvalidOperationException("NO API KEY FOUND IN START OF COMMAND");
 
             return parts[1] == apiKey;
-        }
-
-        public string Execute()
-        {
-            try
-            {
-                var use = new UseDirective(_lines[1]);
-                var content = _lines[2..^1];
-
-                switch (use.System)
-                {
-                    case SystemID.SERVER:
-                        break;
-                    case SystemID.PORT:
-                        break;
-                }
-
-                return "";
-            }
-            catch (Exception e) 
-            {
-                return $"ERR:{e.Message}";
-            }
         }
 
         private readonly string[] _lines;

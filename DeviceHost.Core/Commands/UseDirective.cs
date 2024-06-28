@@ -1,56 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DeviceHost.Core.Commands
 {
-    public class UseDirective
+    public class UseDirective :
+        Line
     {
-        public UseDirective(string line)
+        public UseDirective(string line) :
+            base(line)
         {
-            var parts = (from part in line.Split(' ')
-                        where !string.IsNullOrEmpty(part)
-                        select part.Trim()).ToArray();
+        }
 
-            if (parts.Length == 0)
-                throw new ArgumentException("INVALID USE DIRECTIVE, WRONG LENGTH");
-
-            if (parts[0].ToUpper() != "USE")
-                throw new ArgumentException("INVALID USE DIRECTIVE, DO NOT START WITH USE");
-
-            if (parts.Length == 2)
+        public bool Parse(out string errorMessage)
+        {
+            if (Parts.Length == 0)
             {
-                if (parts[1].ToUpper() != "SERVER")
-                    throw new ArgumentException("INVALID USE DIRECTIVE, INVALID TYPE");
+                errorMessage = "INVALID USE DIRECTIVE, WRONG LENGTH";
+                return false;
+            }
+
+            if (Parts[0].ToUpper() != "USE")
+            {
+                errorMessage = "INVALID USE DIRECTIVE, DO NOT START WITH USE";
+                return false;
+            }
+
+            if (Parts.Length == 2)
+            {
+                if (Parts[1].ToUpper() != "SERVER")
+                {
+                    errorMessage = "INVALID USE DIRECTIVE, INVALID TYPE";
+                    return false;
+                }
 
                 System = SystemID.SERVER;
                 Port = "none";
                 Device = DeviceID.None;
-                return;
-            }
 
-            if (parts.Length == 4)
+                errorMessage = string.Empty;
+                return true;
+            }
+            else if (Parts.Length == 4)
             {
-                System = parts[1].ToUpper() switch
+                switch (Parts[1].ToUpper())
                 {
-                    "PORT" => SystemID.PORT,
-                    _ => throw new ArgumentException("INVALID USE DIRECTIVE, INVALID TYPE"),
+                    case "PORT": 
+                        System = SystemID.PORT; 
+                        break;
+                    default:
+                        errorMessage = "NO PORT SPECIFICATION";
+                        return false;
                 };
 
-                Port = parts[2];
-                Device = parts[3].ToDevice();
+                Port = Parts[2];
 
-                return;
+                switch (Parts[3].ToUpper())
+                {
+                    case "CPARPLUS":
+                        Device = DeviceID.CPARPlus;
+                        break;
+                    default:
+                        errorMessage = "INVALID DEVICE";
+                        return false;
+                }
+
+                errorMessage = string.Empty;
+                return true;
+            }
+            else
+            {
+                errorMessage = "INVALID USE DIRECTIVE FORMAT";
+                return false;
             }
         }
 
-        public SystemID System { get; }
+        public SystemID System { get; private set; }
 
-        public string Port { get; } = string.Empty;
 
-        public DeviceID Device { get; }
+        public string Port { get; private set; } = string.Empty;
 
+        public DeviceID Device { get; private set; } = DeviceID.None;
     }
 }

@@ -12,16 +12,4 @@ namespace DeviceHost.Core
         None,
         CPARPlus
     }
-
-    public static class DeviceExtensions
-    {
-        public static DeviceID ToDevice(this string self) =>
-            self.ToUpper() switch
-            {
-                "NONE" => DeviceID.None,
-                "CPARPLUS" => DeviceID.CPARPlus,
-                _ => throw new ArgumentException("INVALID USE DIRECTIVE, INVALID DEVICE CLASS"),
-            };
-
-    }
 }

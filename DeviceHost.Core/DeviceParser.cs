@@ -41,17 +41,9 @@ namespace DeviceHost.Core
             return new ParseResult(response.ToString());
         }
 
-        private string ParseCommand(string content)
+        public string ParseCommand(string content)
         {
-            var command = new Command(content);
-
-            if (!command.Validate(out string errorMessage))
-                return errorMessage;
-            
-            if (!command.VerifyKey(ApiKey)) 
-                return "ERR:INVALID API KEY";
-
-            return command.Execute();
+            return "";
         }
 
 
