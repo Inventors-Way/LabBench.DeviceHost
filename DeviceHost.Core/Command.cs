@@ -21,7 +21,7 @@ namespace DeviceHost.Core
         {
             if (_lines.Length < 4) 
             {
-                errorMessage = "ERR:INVALID COMMAND FORMAT";
+                errorMessage = $"ERR:INVALID COMMAND FORMAT, CONTENT TOO SHORT (lines < 4, lines = {_lines.Length})";
                 return false;
             }
 
