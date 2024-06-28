@@ -1,11 +1,15 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using DeviceHost.Core.Commands;
 using Serilog;
 
 namespace DeviceHost.Core
 {
-    public class DeviceServer : IDisposable
+    public class DeviceServer : 
+        IDeviceServer,
+        IDeviceHandler,
+        IDisposable
     {
         public int Port { get; set; } = 9797;
 
@@ -88,7 +92,22 @@ namespace DeviceHost.Core
             }
         }
 
+        #region IDeviceServer
 
+        public IDeviceHandler GetHandler(UseDirective directive)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        #region IDeviceHandler
+
+        public string Execute(Command command)
+        {
+            return "ERR, NOT IMPLEMENTED";
+        }
+
+        #endregion
         #region Dispose Pattern
 
         private bool disposedValue;
