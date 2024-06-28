@@ -10,12 +10,28 @@ namespace DeviceHost.Core
 {
     public class Command
     {
-        public Command(string content) 
+        public static bool Create(string content, out Command command, out string errorMessage)
+        {
+            command = new Command(content);
+            return command.Validate(out errorMessage);
+        }
+
+        private Command(string content) 
         {
             _lines = (from line in content.Split(';')
                       where !string.IsNullOrEmpty(line)
                       select line.Trim()).ToArray();
         }
+
+        public SystemID System { get; private set; } = SystemID.SERVER;
+
+        public DeviceID Device { get; private set; } = DeviceID.None;
+
+        public string Port { get; private set; } = string.Empty;
+
+        public string Name { get; private set; } = string.Empty;
+
+        public string[] Content { get; private set; } = Array.Empty<string>();
 
         public bool Validate(out string errorMessage)
         {
