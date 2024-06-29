@@ -26,14 +26,17 @@ namespace devhost
         {
             if (string.IsNullOrEmpty(options.LogFile))
             {
-                Log.Logger = new LoggerConfiguration()
+                Log.Logger = new LoggerConfiguration()           
+                    .MinimumLevel.Debug()
                     .WriteTo.Console()
                     .CreateLogger();
+                
                 Log.Information("Configuration logging: Console");
             }
             else
             {
                 Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Debug()
                     .WriteTo.Console()
                     .WriteTo.File(options.LogFile, rollingInterval: RollingInterval.Day)
                     .CreateLogger();

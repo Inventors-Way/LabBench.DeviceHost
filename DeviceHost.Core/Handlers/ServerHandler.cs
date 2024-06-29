@@ -1,4 +1,5 @@
 ﻿using DeviceHost.Core.Commands;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
@@ -64,7 +65,17 @@ namespace DeviceHost.Core.Handlers
             switch (device[0])
             {
                 case "CPARPLUS":
+                    if (_handlers.ContainsKey(port[0]))
+                    {
+                        Log.Error("Error: attempting to create handler on an allready bound port");
+                        return $"ERR: HANDLER ALLREADY CREATED FOR PORT [ {port[0]} ]"; 
+                    }
+
+                    _handlers.Add(port[0], new CPARPlusHandler());
+                    Log.Debug("Creating handler [ {device} ] on port [ {port} ]", device[0], port[0]);
+
                     return "OK";
+
                 default: return $"ERR: UNKNOWN DEVICE [ {device[0]} ]";
             }
         }
