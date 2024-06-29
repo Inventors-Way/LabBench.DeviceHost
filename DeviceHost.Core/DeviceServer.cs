@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO.Ports;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using DeviceHost.Core.Commands;
@@ -93,9 +94,15 @@ namespace DeviceHost.Core
 
         #region IDeviceServer
 
-        public IDeviceHandler GetHandler(Command command)
+        public IDeviceHandler? GetHandler(Command command)
         {
-            return this;
+            if (command.System == SystemID.SERVER)
+                return this;
+
+            if (_handlers.ContainsKey(command.Port))
+                return _handlers[command.Port];
+
+            return null;
         }
 
         #endregion
@@ -103,7 +110,16 @@ namespace DeviceHost.Core
 
         public string Execute(Command command)
         {
-            return "ERR, NOT IMPLEMENTED";
+            return command.Name switch
+            {
+                "PORTS" => GetPorts(),
+                _ => "ERR, NOT IMPLEMENTED",
+            };
+        }
+
+        public static string GetPorts()
+        {
+            return string.Join(";", SerialPort.GetPortNames());
         }
 
         #endregion
@@ -141,5 +157,7 @@ namespace DeviceHost.Core
         }
 
         #endregion
+
+        private readonly Dictionary<string, IDeviceHandler> _handlers = new();
     }
 }
