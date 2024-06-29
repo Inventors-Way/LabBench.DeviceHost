@@ -152,7 +152,6 @@ namespace DeviceHost.Core.Handlers
             function.Outlet02 = ParseChannel(outlet02[0]);
 
             return true;
-            throw new NotImplementedException();
         }
     }
 }
