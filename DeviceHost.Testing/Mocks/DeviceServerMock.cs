@@ -12,7 +12,7 @@ namespace DeviceHost.Testing.Mocks
         IDeviceServer,
         IDeviceHandler
     {
-        public DeviceServerMock Add(string port, IDeviceHandler handler)
+        public DeviceServerMock Add(string port, DeviceHandlerMock handler)
         {
             if (_handlers.ContainsKey(port))
             {
@@ -39,7 +39,7 @@ namespace DeviceHost.Testing.Mocks
 
         public DeviceHandlerMock Server { get; } = new DeviceHandlerMock();
 
-        public IDeviceHandler this[string port]
+        public DeviceHandlerMock this[string port]
         {
             get
             {
@@ -50,6 +50,6 @@ namespace DeviceHost.Testing.Mocks
             }
         }
 
-        private readonly Dictionary<string, IDeviceHandler> _handlers = new();
+        private readonly Dictionary<string, DeviceHandlerMock> _handlers = new();
     }
 }

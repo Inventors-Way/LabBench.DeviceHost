@@ -15,7 +15,7 @@ namespace DeviceHost.Testing
         private readonly static string serverIp = "127.0.0.1"; // IP address of the server
         private readonly static int serverPort = 9797;        // Port of the server
 
-        public static IDeviceServer CreateDeviceServerMock() => 
+        public static DeviceServerMock CreateDeviceServerMock() => 
             new DeviceServerMock()
                 .Add("COM4", new DeviceHandlerMock());
         
