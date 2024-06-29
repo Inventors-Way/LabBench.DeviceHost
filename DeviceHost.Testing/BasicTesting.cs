@@ -28,7 +28,7 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void T01_GetPorts() => TestScript("GetPorts.txt");
+        public void T01_GetPorts() => TestScript("Ports.txt");
 
         [TestMethod]
         public void T02_Open() => TestScript("Open.txt");

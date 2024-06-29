@@ -15,7 +15,7 @@ namespace DeviceHost.Core.Commands
         {
         }
 
-        public bool Parse(out string errorMessage)
+        public override bool Parse(out string errorMessage)
         {
             if (Parts.Length == 0)
             {

@@ -6,31 +6,40 @@ using System.Threading.Tasks;
 
 namespace DeviceHost.Core.Commands
 {
-    public class StringParameter
+    public class StringParameter :
+        Line
     {
-        public StringParameter(string line)
+        public StringParameter(string line) :
+            base(line)
         {
-            var parts = (from part in line.Split(' ')
-                         where !string.IsNullOrEmpty(part)
-                         select part.Trim()).ToArray();
-
-            if (parts.Length < 2)
-                throw new ArgumentException("INVALID PARAMETER SPECIFICATION");
-
-            Name = parts[0].ToUpper();
-
-            values = new string[parts.Length - 1];
-
-            for (int n = 1; n < parts.Length; n++)
-                values[n-1] = parts[n]; 
         }
 
-        public string Name { get; }
+        public override bool Parse(out string errorMessage)
+        {
+            if (Parts.Length < 2)
+            {
 
-        public string this[int index] => values[index];
+                errorMessage = $"INVALID PARAMETER SPECIFICATION";
+                return false;
+            }
 
-        public int Length => values.Length;
+            Name = Parts[0].ToUpper();
 
-        private readonly string[] values;
+            Values = new string[Parts.Length - 1];
+
+            for (int n = 1; n < Parts.Length; n++)
+                Values[n - 1] = Parts[n];
+
+            errorMessage = "";
+            return true;
+        }
+
+        public string Name { get; private set; } = string.Empty;
+
+        public string[] Values { get; private set; } = Array.Empty<string>();
+
+        public string this[int index] => Values[index];
+
+        public int Length => Values.Length;
     }
 }

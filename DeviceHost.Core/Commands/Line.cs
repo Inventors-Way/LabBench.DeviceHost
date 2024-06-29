@@ -10,17 +10,16 @@ namespace DeviceHost.Core.Commands
     {
         public Line(string line)
         {
-            _line = line;
+            Content = line;
             Parts = (from part in line.Split(' ')
                          where !string.IsNullOrEmpty(part)
                          select part.Trim()).ToArray();
         }
 
+        public abstract bool Parse(out string errorMessage);
+
+        protected string Content { get; }
+
         protected string[] Parts { get; }
-
-        public int Length => _line.Length;
-
-
-        private readonly string _line;
     }
 }

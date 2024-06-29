@@ -13,14 +13,7 @@ namespace DeviceHost.Core
         public static bool Create(string content, out Command command, out string errorMessage)
         {
             command = new Command(content);
-            return command.Validate(out errorMessage);
-        }
-
-        private Command(string content) 
-        {
-            _lines = (from line in content.Split(';')
-                      where !string.IsNullOrEmpty(line)
-                      select line.Trim()).ToArray();
+            return command.Parse(out errorMessage);
         }
 
         public SystemID System { get; private set; } = SystemID.SERVER;
@@ -33,7 +26,14 @@ namespace DeviceHost.Core
 
         public string[] Content { get; private set; } = Array.Empty<string>();
 
-        public bool Validate(out string errorMessage)
+        private Command(string content)
+        {
+            _lines = (from line in content.Split(';')
+                      where !string.IsNullOrEmpty(line)
+                      select line.Trim()).ToArray();
+        }
+
+        private bool Parse(out string errorMessage)
         {
             if (_lines.Length < 4) 
             {
@@ -70,7 +70,10 @@ namespace DeviceHost.Core
             Device = useDirective.Device;
             Port = useDirective.Port;
 
-            Content = _lines[2..^1];
+            var cmdLine = new StringParameter(_lines[2]);
+
+            if (_lines.Length > 4)
+                Content = _lines[3..^1];
 
             errorMessage = string.Empty;
             return true;

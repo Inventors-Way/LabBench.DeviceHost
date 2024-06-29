@@ -16,6 +16,7 @@ namespace DeviceHost.Testing
         {
             UseDirective directive = new("USE SERVER");
 
+            Assert.IsTrue(directive.Parse(out string errorMessage));
             Assert.AreEqual(directive.System, SystemID.SERVER);
             Assert.AreEqual(directive.Port, "none");
             Assert.AreEqual(directive.Device, DeviceID.None);
@@ -26,6 +27,7 @@ namespace DeviceHost.Testing
         {
             UseDirective directive = new("USE PORT COM4 CPARPLUS");
 
+            Assert.IsTrue(directive.Parse(out string errorMessage));
             Assert.AreEqual(directive.System, SystemID.PORT);
             Assert.AreEqual(directive.Port, "COM4");
             Assert.AreEqual(directive.Device, DeviceID.CPARPlus);
