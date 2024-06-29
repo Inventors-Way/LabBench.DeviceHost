@@ -11,7 +11,7 @@ namespace DeviceHost.Core.Handlers
     {
         public string Execute(Command command)
         {
-            return "ERR, NOT IMPLEMENTED";
+            return "ERR: NOT IMPLEMENTED";
         }
     }
 }
