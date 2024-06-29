@@ -12,8 +12,8 @@ namespace DeviceHost.Core.Commands
         {
             Content = line;
             Parts = (from part in line.Split(' ')
-                         where !string.IsNullOrEmpty(part)
-                         select part.Trim()).ToArray();
+                     where !string.IsNullOrEmpty(part)
+                     select part.Trim()).ToArray();
         }
 
         public abstract bool Parse(out string errorMessage);
