@@ -93,7 +93,7 @@ namespace DeviceHost.Core
 
         #region IDeviceServer
 
-        public IDeviceHandler GetHandler(UseDirective directive)
+        public IDeviceHandler GetHandler(Command command)
         {
             return this;
         }

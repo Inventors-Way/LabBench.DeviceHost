@@ -24,13 +24,13 @@ namespace DeviceHost.Testing.Mocks
             return this;
         }
 
-        public IDeviceHandler? GetHandler(UseDirective directive)
+        public IDeviceHandler? GetHandler(Command command)
         {
-            if (directive.System == SystemID.SERVER)
+            if (command.System == SystemID.SERVER)
                 return this;
 
-            if (_handlers.ContainsKey(directive.Port)) 
-                return _handlers[directive.Port];
+            if (_handlers.ContainsKey(command.Port)) 
+                return _handlers[command.Port];
 
             return null;
         }
