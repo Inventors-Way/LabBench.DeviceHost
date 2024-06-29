@@ -9,6 +9,6 @@ namespace DeviceHost.Core
 {
     public interface IDeviceServer
     {
-        IDeviceHandler GetHandler(UseDirective directive);
+        IDeviceHandler? GetHandler(UseDirective directive);
     }
 }
