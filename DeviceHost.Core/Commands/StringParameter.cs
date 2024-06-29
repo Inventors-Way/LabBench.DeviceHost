@@ -18,7 +18,6 @@ namespace DeviceHost.Core.Commands
         {
             if (Parts.Length < 2)
             {
-
                 errorMessage = $"INVALID PARAMETER SPECIFICATION";
                 return false;
             }
