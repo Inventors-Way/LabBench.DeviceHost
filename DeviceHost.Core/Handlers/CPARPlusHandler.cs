@@ -65,6 +65,7 @@ namespace DeviceHost.Core.Handlers
             "START" => Start(command),
             "STOP" => Stop(),
             "WAVEFORM" => Waveform(command),
+            "SIGNALS" => Signals(),
             _ => $"ERR;UNKNOWN COMMAND [ {command.Name} ]"
         };
 
@@ -85,6 +86,35 @@ namespace DeviceHost.Core.Handlers
                 return error;
 
             return Run(function, (function) => "OK;");
+        }
+
+        private int PressureToInteger(double pressure) =>
+            (int)(pressure * 10);
+
+        private int RatingToInteger(double vas) =>
+            (int)(vas * 10);
+
+        private string Signals()
+        {
+            lock (lockObject)
+            {
+                var builder = new StringBuilder();
+
+                builder.AppendLine("Pressure01;Target01;Pressure02;Target01;Rating;");
+
+                while (statusQueue.Count > 0)
+                {
+                    var item = statusQueue.Dequeue();
+
+                    builder.Append($"{PressureToInteger(item.ActualPressure01)};");
+                    builder.Append($"{PressureToInteger(item.TargetPressure01)};");
+                    builder.Append($"{PressureToInteger(item.ActualPressure02)};");
+                    builder.Append($"{PressureToInteger(item.TargetPressure02)};");
+                    builder.AppendLine($"{RatingToInteger(item.VasScore)};");
+                }
+
+                return builder.ToString();
+            }
         }
 
         private string Open()

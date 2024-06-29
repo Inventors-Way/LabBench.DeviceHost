@@ -83,11 +83,17 @@ def main():
         RunScript("Create.txt")
         RunScript("Open.txt")
         
-        print("WAITING FOR 1S")
-        time.sleep(0.2)
 
-        RunScript("State.txt")
         RunScript("Ping.txt")
+        RunScript("Waveform.txt")
+        RunScript("Start.txt")
+
+        print("WAITING FOR 5S")
+        time.sleep(5)
+        RunScript("State.txt")
+        RunScript("Signals.txt")
+
+        RunScript("Stop.txt")
         RunScript("Close.txt")
         RunScript("Delete.txt")
     except Exception as e:

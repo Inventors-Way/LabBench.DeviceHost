@@ -51,7 +51,7 @@ namespace DeviceHost.Core.Handlers
             {
                 var instruction = new IntegerParameter(command.Content[n]);
 
-                if (instruction.Parse(out error)) return false;
+                if (!instruction.Parse(out error)) return false;
 
                 switch (instruction.Name.Trim())
                 {
@@ -134,10 +134,10 @@ namespace DeviceHost.Core.Handlers
             }
 
             var criterion = new IntegerParameter(command.Content[0], 1, "STOPCRITERION");
-            var trigger = new IntegerParameter(command.Content[0], 1, "EXTERNALTRIGGER");
-            var overrideRating = new IntegerParameter(command.Content[0], 1, "OVERRIDERATING");
-            var outlet01 = new IntegerParameter(command.Content[0], 1, "OUTLET01");
-            var outlet02 = new IntegerParameter(command.Content[0], 1, "OUTLET02");
+            var trigger = new IntegerParameter(command.Content[1], 1, "EXTERNALTRIGGER");
+            var overrideRating = new IntegerParameter(command.Content[2], 1, "OVERRIDERATING");
+            var outlet01 = new IntegerParameter(command.Content[3], 1, "OUTLET01");
+            var outlet02 = new IntegerParameter(command.Content[4], 1, "OUTLET02");
 
             if (!criterion.Parse(out error)) return false;
             if (!trigger.Parse(out error)) return false;
