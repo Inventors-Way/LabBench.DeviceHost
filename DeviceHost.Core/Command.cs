@@ -62,15 +62,24 @@ namespace DeviceHost.Core
             var useDirective = new UseDirective(_lines[1]);
 
             if (!useDirective.Parse(out errorMessage))
-            {
                 return false;
-            }
 
             System = useDirective.System;
             Device = useDirective.Device;
             Port = useDirective.Port;
 
-            var cmdLine = new StringParameter(_lines[2]);
+            var cmdDirective = new StringParameter(_lines[2]);
+
+            if (!cmdDirective.Parse(out errorMessage))
+                return false;
+
+            if (cmdDirective.Name != "CMD")
+            {
+                errorMessage = "ERR:NO COMMAND DIRECTIVE";
+                return false;
+            }
+
+            Name = cmdDirective[0];
 
             if (_lines.Length > 4)
                 Content = _lines[3..^1];

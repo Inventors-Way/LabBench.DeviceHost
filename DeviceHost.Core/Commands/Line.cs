@@ -14,6 +14,16 @@ namespace DeviceHost.Core.Commands
             Parts = (from part in line.Split(' ')
                      where !string.IsNullOrEmpty(part)
                      select part.Trim()).ToArray();
+            ExpectedValues = -1;
+        }
+
+        public Line(string line, int expectedValues)
+        {
+            Content = line;
+            Parts = (from part in line.Split(' ')
+                     where !string.IsNullOrEmpty(part)
+                     select part.Trim()).ToArray();
+            ExpectedValues = expectedValues;
         }
 
         public abstract bool Parse(out string errorMessage);
@@ -21,5 +31,7 @@ namespace DeviceHost.Core.Commands
         public string Content { get; }
 
         public string[] Parts { get; }
+
+        protected int ExpectedValues { get; }
     }
 }

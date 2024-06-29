@@ -14,11 +14,22 @@ namespace DeviceHost.Core.Commands
         {
         }
 
+        public IntegerParameter(string line, int expectedValues) :
+            base(line, expectedValues)
+        {
+        }
+
         public override bool Parse(out string errorMessage)
         {
             if (Parts.Length < 2)
             {
                 errorMessage = "INVALID PARAMETER SPECIFICATION";
+                return false;
+            }
+
+            if ((ExpectedValues >= 0) && (Parts.Length - 1 != ExpectedValues))
+            {
+                errorMessage = $"INVALID NUMBER OF VALUES, FOUND [ {Parts.Length - 1} ] EXPECTED [ {ExpectedValues} ]";
                 return false;
             }
 
