@@ -1,5 +1,6 @@
 import socket
 import logging
+import time
 
 def send_and_receive(message: str, timeout: int = 10) -> str:
     """
@@ -73,13 +74,19 @@ def LoadScript(filename):
 def RunScript(scriptName):
     print(f"RUNNING SCRIPT: {scriptName}")
     response = send_and_receive(LoadScript(scriptName))
-    print(f"Response from server: {response}")
+    print("RESPONSE FROM SERVER:")
+    print(response)
 
 
 def main():
     try:
         RunScript("Create.txt")
         RunScript("Open.txt")
+        
+        print("WAITING FOR 1S")
+        time.sleep(0.2)
+
+        RunScript("State.txt")
         RunScript("Ping.txt")
         RunScript("Close.txt")
         RunScript("Delete.txt")

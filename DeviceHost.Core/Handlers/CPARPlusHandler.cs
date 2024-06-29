@@ -26,18 +26,39 @@ namespace DeviceHost.Core.Handlers
             _device.EventReceived += EventReceived;
         }
 
-        private void EventReceived(object? sender, EventMessage e)
-        {            
+        private void EventReceived(object? sender, EventMessage msg)
+        {
+            lock (lockObject)
+            {
+                switch (msg.Event)
+                {
+                    case EventID.EVT_START_STIMULATION:
+                        stimulating = true;
+                        statusQueue.Clear();
+                        break;
+                    case EventID.EVT_STOP_STIMULATION:
+                        stimulating = false;
+                        break;
+                }
+            }
         }
 
-        private void StatusReceived(object? sender, StatusMessage e)
-        {            
+        private void StatusReceived(object? sender, StatusMessage msg)
+        {   
+            lock (lockObject) 
+            {
+                if (stimulating)
+                    statusQueue.Enqueue(msg);
+
+                status = msg;
+            }
         }
 
         public string Execute(Command command) => command.Name switch
         {
             "OPEN" => Open(),
             "CLOSE" => Close(),
+            "STATE" => State(),
             "PING" => Ping(),
             _ => $"ERR;UNKNOWN COMMAND [ {command.Name} ]"
         };
@@ -59,11 +80,36 @@ namespace DeviceHost.Core.Handlers
             }
         }
 
+        public string State()
+        {
+            lock (lockObject)
+            {
+                if (status is null)
+                    return "ERR;No status";
+
+                StringBuilder sb = new StringBuilder();
+
+                sb.AppendLine($"State {status.SystemState};");
+                sb.AppendLine($"VasConnected {status.VasConnected};");
+                sb.AppendLine($"VasIsLow {status.VasIsLow};");
+                sb.AppendLine($"PowerOn {status.PowerOn};");
+                sb.AppendLine($"StartPossible {status.StartPossible};");
+                sb.AppendLine($"SupplyPressureLow {status.SupplyPressureLow};");
+                sb.AppendLine($"Condition {status.Condition};");
+                sb.AppendLine($"VasScore {((int) (status.VasScore*10))};");
+                sb.AppendLine($"FinalVasScore {((int) (status.FinalVasScore*10))};");
+                sb.AppendLine($"SupplyPressure {((int) status.SupplyPressure)};");
+                sb.Append($"StopPressed {status.StopPressed};");
+
+                return sb.ToString();
+            }
+        }
+
         private string Run<T>(T function, Func<T, string> onSuccess)
             where T : DeviceFunction
         {
             if (!_device.IsOpen)
-                return "ERR;Device is closed";
+                return "ERR;Device is closed;";
 
             try
             {
@@ -84,29 +130,29 @@ namespace DeviceHost.Core.Handlers
                 if (_device.IsCompatible(function))
                 {
                     Log.Information("PING: {device}", device);
-                    return $"OK;{device}";
+                    return $"OK;{device};";
                 }
                 else
                 {
                     Log.Error("PING: INCOMPATIBLE DEVICE: {device}", device);
-                    return $"ERR:INCOMPATIBLE DEVICE [ {device} ]";
+                    return $"ERR:Incompatible device [ {device} ];";
                 }
             });
 
         private string Close()
         {
             if (!_device.IsOpen)
-                return "OK";
+                return "OK;";
 
             try
             {
                 _device.Close();
                 Log.Information("Device on port [ {port} ] closed", _device.Location);
-                return "OK";
+                return "OK;";
             }
             catch (Exception ex)
             {
-                return $"ERR:{ex.Message}";
+                return $"ERR;{ex.Message};";
             }
         }
 
@@ -114,5 +160,9 @@ namespace DeviceHost.Core.Handlers
             _device.Dispose();
 
         private readonly CPARplusCentral _device;
+        private readonly object lockObject = new object();
+        private readonly Queue<StatusMessage> statusQueue = new();
+        private StatusMessage? status;
+        private bool stimulating = false;
     }
 }
