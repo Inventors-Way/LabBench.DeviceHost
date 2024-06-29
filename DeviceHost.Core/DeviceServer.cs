@@ -113,6 +113,8 @@ namespace DeviceHost.Core
             return command.Name switch
             {
                 "PORTS" => GetPorts(),
+                "CREATE" => Create(),
+                "DELETE" => Delete(),
                 _ => "ERR, NOT IMPLEMENTED",
             };
         }
@@ -120,6 +122,16 @@ namespace DeviceHost.Core
         public static string GetPorts()
         {
             return string.Join(";", SerialPort.GetPortNames());
+        }
+
+        public string Create()
+        {
+            return "OK";
+        }
+
+        public string Delete()
+        {
+            return "OK";
         }
 
         #endregion
