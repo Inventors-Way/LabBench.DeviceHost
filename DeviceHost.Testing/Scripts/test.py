@@ -75,7 +75,7 @@ def LoadScript(filename):
         return f"Error: Could not read the file '{filename}'."
 
 def main():
-    message = LoadScript("Ports.txt")
+    message = LoadScript("Create.txt")
     
     try:
         response = send_and_receive(message)
