@@ -60,7 +60,7 @@ namespace DeviceHost.Core.Handlers
                         }
                         function.Instructions.Add(WaveformInstruction.Step(
                             pressure: ToPressure(instruction[0]),
-                            time: ToSeconds(instruction[1]));
+                            time: ToSeconds(instruction[1])));
                         
                         break;
                     case "INC":

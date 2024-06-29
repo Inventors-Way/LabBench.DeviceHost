@@ -79,13 +79,17 @@ namespace DeviceHost.Core.Handlers
         private string Ping() =>
             Run(new DeviceIdentification(), (function) =>
             {
+                var device = $"{function.Device}, Rev. {function.Version}";
+
                 if (_device.IsCompatible(function))
                 {
-                    return $"OK;{function.Device}, Rev. {function.Version}";
+                    Log.Information("PING: {device}", device);
+                    return $"OK;{device}";
                 }
                 else
                 {
-                    return $"ERR:INCOMPATIBLE DEVICE [ {function.Device}, Rev. {function.Version}]";
+                    Log.Error("PING: INCOMPATIBLE DEVICE: {device}", device);
+                    return $"ERR:INCOMPATIBLE DEVICE [ {device} ]";
                 }
             });
 
