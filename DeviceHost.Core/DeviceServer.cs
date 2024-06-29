@@ -51,11 +51,10 @@ namespace DeviceHost.Core
         async Task HandleClient(Socket handler)
         {
             byte[] buffer = new byte[65535];
-            var parser = new DeviceParser()
+            var parser = new DeviceParser(this)
             {
                 ApiKey = ApiKey
             };
-
 
             try
             {
@@ -96,7 +95,7 @@ namespace DeviceHost.Core
 
         public IDeviceHandler GetHandler(UseDirective directive)
         {
-            throw new NotImplementedException();
+            return this;
         }
 
         #endregion

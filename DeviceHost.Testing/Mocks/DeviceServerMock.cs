@@ -39,6 +39,17 @@ namespace DeviceHost.Testing.Mocks
 
         public DeviceHandlerMock Server { get; } = new DeviceHandlerMock();
 
+        public IDeviceHandler this[string port]
+        {
+            get
+            {
+                if (!_handlers.ContainsKey(port))
+                    throw new ArgumentException($"No handler found for port [ {port} ]", nameof(port));
+
+                return _handlers[port];
+            }
+        }
+
         private readonly Dictionary<string, IDeviceHandler> _handlers = new();
     }
 }

@@ -9,6 +9,9 @@ namespace DeviceHost.Core
 {
     public class DeviceParser
     {
+        public DeviceParser(IDeviceServer server) =>
+            _server = server;
+
         public string ApiKey { get; set; } = "1234";
 
         public ParseResult Parse(string input)
@@ -46,7 +49,7 @@ namespace DeviceHost.Core
             return "";
         }
 
-
+        private IDeviceServer _server;
         private readonly StringBuilder builder = new ();
         private readonly Regex _commandPattern = new(@"START\s[\w]+;[\w\s;]*END;", RegexOptions.Compiled);
     }

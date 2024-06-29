@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Net.Sockets;
+using DeviceHost.Core;
+using DeviceHost.Testing.Mocks;
 
 namespace DeviceHost.Testing
 {
@@ -12,6 +14,11 @@ namespace DeviceHost.Testing
     {
         private readonly static string serverIp = "127.0.0.1"; // IP address of the server
         private readonly static int serverPort = 9797;        // Port of the server
+
+        public static IDeviceServer CreateDeviceServerMock() => 
+            new DeviceServerMock()
+                .Add("COM4", new DeviceHandlerMock());
+        
 
         public static string GetScript(string name)
         {
