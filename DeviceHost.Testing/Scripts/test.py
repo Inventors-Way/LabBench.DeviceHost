@@ -75,10 +75,10 @@ def LoadScript(filename):
         return f"Error: Could not read the file '{filename}'."
 
 def main():
-    message = LoadScript("Create.txt")
-    
     try:
-        response = send_and_receive(message)
+        response = send_and_receive(LoadScript("Create.txt"))
+        print(f"Response from server: {response}")
+        response = send_and_receive(LoadScript("Delete.txt"))
         print(f"Response from server: {response}")
     except Exception as e:
         print(f"An error occurred: {e}")

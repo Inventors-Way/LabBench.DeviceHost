@@ -59,8 +59,14 @@ namespace DeviceHost.Core.Handlers
             if (!port.Parse(out string portError))
                 return portError;
 
+            if (port.Name != "PORT")
+                return "ERR:NO PORT STATEMENT";
+
             if (!device.Parse(out string deviceError))
                 return deviceError;
+
+            if (device.Name != "DEVICE")
+                return "ERR:NO DEVICE STATEMENT";
 
             switch (device[0])
             {
@@ -72,7 +78,7 @@ namespace DeviceHost.Core.Handlers
                     }
 
                     _handlers.Add(port[0], new CPARPlusHandler());
-                    Log.Debug("Creating handler [ {device} ] on port [ {port} ]", device[0], port[0]);
+                    Log.Information("Creating handler [ {device} ] on port [ {port} ]", device[0], port[0]);
 
                     return "OK";
 
@@ -82,6 +88,27 @@ namespace DeviceHost.Core.Handlers
 
         public string Delete(Command command)
         {
+            if (command.Content.Length != 1)
+            {
+                return "ERR:WRONG COMMAND CONTENT";
+            }
+
+            var port = new StringParameter(command.Content[0], 1);
+
+            if (!port.Parse(out string portError))
+                return portError;
+
+            if (port.Name != "PORT")
+                return "ERR:NO PORT STATEMENT";
+
+            if (!_handlers.ContainsKey(port[0]))
+                return $"ERR:NO HANDLER FOUND FOR PORT [ {port[0]} ]";
+
+            _handlers[port[0]].Cleanup();
+            _handlers.Remove(port[0]);
+
+            Log.Information("Handler deleted for port [ {port} ]", port[0]);
+
             return "OK";
         }
 
