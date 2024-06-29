@@ -38,7 +38,7 @@ namespace DeviceHost.Core.Commands
                 }
 
                 System = SystemID.SERVER;
-                Port = "none";
+                Port = string.Empty;
                 Device = DeviceID.None;
 
                 errorMessage = string.Empty;

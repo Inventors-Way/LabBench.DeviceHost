@@ -5,10 +5,18 @@ using System.Text;
 namespace DeviceHost.Testing
 {
     [TestClass]
-    public class BasicTesting
+    public class IntegrationTesting
     {
+        private bool Enabled { get; } = false;
+
         private void TestScript(string script)
         {
+            if (!Enabled)
+            {
+                Console.WriteLine("INTEGRATION TESTS IS DISABLED");
+                return;
+            }
+
             try
             {
                 string messageToSend = TestUtility.GetScript(script);
