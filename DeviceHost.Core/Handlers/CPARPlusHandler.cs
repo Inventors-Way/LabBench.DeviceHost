@@ -1,4 +1,5 @@
 ﻿using CPARplusCommLib;
+using Inventors.ECP.Functions;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -24,30 +25,49 @@ namespace DeviceHost.Core.Handlers
             "OPEN" => Open(),
             "CLOSE" => Close(),
             "PING" => Ping(),
-            _ => $"ERR: UNKNOWN COMMAND [ {command.Name} ]"
+            _ => $"ERR;UNKNOWN COMMAND [ {command.Name} ]"
         };
 
         private string Open()
         {
             if (_device.IsOpen)
-                return "OK";
+                return "OK;";
 
             try
             {
                 _device.Open();
                 Log.Information("Device on port [ {port} ] opened", _device.Location);
-                return "OK";
+                return "OK;";
             }
             catch (Exception ex) 
             {
-                return $"ERR:{ex.Message}";
+                return $"ERR;{ex.Message}";
             }
         }
 
         private string Ping()
         {
+            if (!_device.IsOpen)
+                return "ERR;Device is closed";
 
-            return "OK";
+            try
+            {
+                var function = new DeviceIdentification();
+                _device.Execute(function);
+
+                if (_device.IsCompatible(function))
+                {
+                    return $"OK;{function.Device}, Rev. {function.Version}";
+                }
+                else
+                {
+                    return $"ERR:INCOMPATIBLE DEVICE [ {function.Device}, Rev. {function.Version}]";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"ERR;{ex.Message}";
+            }
         }
 
         private string Close()
