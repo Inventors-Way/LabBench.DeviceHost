@@ -41,7 +41,7 @@ namespace DeviceHost.Testing
             Assert.AreEqual(string.Empty, command.Port);
             Assert.AreEqual("CREATE", command.Name);
             Assert.AreEqual(2, command.Content.Length);
-            Assert.AreEqual("PORT COM4", command.Content[0]);
+            Assert.AreEqual("PORT COM8", command.Content[0]);
             Assert.AreEqual("DEVICE CPARPLUS", command.Content[1]);
         }
 

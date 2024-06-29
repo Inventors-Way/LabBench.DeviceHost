@@ -9,13 +9,8 @@ namespace DeviceHost.Core.Commands
     public class IntegerParameter :
         Line
     {
-        public IntegerParameter(string line) :
-            base(line)
-        {
-        }
-
-        public IntegerParameter(string line, int expectedValues) :
-            base(line, expectedValues)
+        public IntegerParameter(string line, int expectedValues = -1, string expectedName = "") :
+            base(line, expectedValues, expectedName)
         {
         }
 
@@ -27,11 +22,11 @@ namespace DeviceHost.Core.Commands
                 return false;
             }
 
-            if ((ExpectedValues >= 0) && (Parts.Length - 1 != ExpectedValues))
-            {
-                errorMessage = $"INVALID NUMBER OF VALUES, FOUND [ {Parts.Length - 1} ] EXPECTED [ {ExpectedValues} ]";
+            if (!ParseExpectedValues(out errorMessage))
                 return false;
-            }
+
+            if (!ParseExpectedName(out errorMessage)) 
+                return false;
 
             Name = Parts[0].ToUpper();
 

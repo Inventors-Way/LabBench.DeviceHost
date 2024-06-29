@@ -40,8 +40,8 @@ namespace DeviceHost.Testing
             Assert.IsTrue(result.Complete);
             Console.WriteLine(result.Response);
 
-            Assert.IsTrue(serverMock["COM4"].CommandReceived);
-            var cmd = serverMock["COM4"].Command;
+            Assert.IsTrue(serverMock["COM8"].CommandReceived);
+            var cmd = serverMock["COM8"].Command;
 
             Assert.IsNotNull(cmd);
             Assert.AreEqual("OPEN", cmd.Name);

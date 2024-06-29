@@ -17,7 +17,7 @@ namespace DeviceHost.Testing
 
         public static DeviceServerMock CreateDeviceServerMock() => 
             new DeviceServerMock()
-                .Add("COM4", new DeviceHandlerMock());
+                .Add("COM8", new DeviceHandlerMock());
         
 
         public static string GetScript(string name)
