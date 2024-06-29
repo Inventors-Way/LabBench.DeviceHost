@@ -1,5 +1,7 @@
 ﻿using CPARplusCommLib;
+using Inventors.ECP;
 using Inventors.ECP.Functions;
+using LIOLite.Functions;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,8 @@ namespace DeviceHost.Core.Handlers
         {
             _device = new CPARplusCentral()
             {
-                Location = port
+                Location = port,
+                PingEnabled = true
             };
         }
 
@@ -45,16 +48,26 @@ namespace DeviceHost.Core.Handlers
             }
         }
 
-        private string Ping()
+        private string Execute<T>(T function, Func<T, string> onSuccess)
+            where T : DeviceFunction
         {
             if (!_device.IsOpen)
                 return "ERR;Device is closed";
 
             try
             {
-                var function = new DeviceIdentification();
                 _device.Execute(function);
+                return onSuccess(function); 
+            }
+            catch (Exception ex)
+            {
+                return $"ERR;{ex.Message}";
+            }
+        }
 
+        private string Ping() =>
+            Execute(new DeviceIdentification(), (function) =>
+            {
                 if (_device.IsCompatible(function))
                 {
                     return $"OK;{function.Device}, Rev. {function.Version}";
@@ -63,12 +76,7 @@ namespace DeviceHost.Core.Handlers
                 {
                     return $"ERR:INCOMPATIBLE DEVICE [ {function.Device}, Rev. {function.Version}]";
                 }
-            }
-            catch (Exception ex)
-            {
-                return $"ERR;{ex.Message}";
-            }
-        }
+            });
 
         private string Close()
         {
