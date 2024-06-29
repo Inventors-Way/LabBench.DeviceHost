@@ -6,34 +6,49 @@ using System.Threading.Tasks;
 
 namespace DeviceHost.Core.Commands
 {
-    public class IntegerParameter
+    public class IntegerParameter :
+        Line
     {
-        public IntegerParameter(string line)
+        public IntegerParameter(string line) :
+            base(line)
         {
-            var parts = (from part in line.Split(' ')
-                         where !string.IsNullOrEmpty(part)
-                         select part.Trim()).ToArray();
-
-            if (parts.Length < 2)
-                throw new ArgumentException("INVALID PARAMETER SPECIFICATION");
-
-            Name = parts[0].ToUpper();
-
-            values = new int[parts.Length - 1];
-
-            for (int n = 1; n < parts.Length; n++)
-            {
-                values[n - 1] = int.Parse(parts[n]);
-            }
         }
 
-        public string Name { get; }
+        public override bool Parse(out string errorMessage)
+        {
+            if (Parts.Length < 2)
+            {
+                errorMessage = "INVALID PARAMETER SPECIFICATION";
+                return false;
+            }
 
-        public int this[int index] => values[index];
+            Name = Parts[0].ToUpper();
 
-        public int Length => values.Length;
+            Values = new int[Parts.Length - 1];
 
-        private readonly int[] values;
+            for (int n = 1; n < Parts.Length; n++)
+            {
+                if (!int.TryParse(Parts[n], out int value))
+                {
+                    errorMessage = $"INVALID INTEGER [ {Parts[n]} ]";
+                    return false;
+                }
+
+                Values[n - 1] = value;
+            }
+
+            errorMessage = string.Empty;
+            return true;
+        }
+
+        public string Name { get; private set; } = string.Empty;
+        
+        public int[] Values { get; private set; } = Array.Empty<int>();
+
+        public int this[int index] => Values[index];
+
+        public int Length => Values.Length;
+
 
     }
 }
