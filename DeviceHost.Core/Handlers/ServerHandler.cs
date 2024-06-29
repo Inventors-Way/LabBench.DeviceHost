@@ -23,6 +23,14 @@ namespace DeviceHost.Core.Handlers
             return null;
         }
 
+        public void Cleanup()
+        {
+            foreach (var item in _handlers)
+            {
+                item.Value.Cleanup();
+            }
+        }
+
         public string Execute(Command command)=>
             command.Name switch
             {

@@ -3,13 +3,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using DeviceHost.Core.Commands;
+using DeviceHost.Core.Handlers;
 using Serilog;
 
 namespace DeviceHost.Core
 {
     public class DeviceServer : 
         IDeviceServer,
-        IDeviceHandler,
         IDisposable
     {
         public int Port { get; set; } = 9797;
@@ -94,45 +94,9 @@ namespace DeviceHost.Core
 
         #region IDeviceServer
 
-        public IDeviceHandler? GetHandler(Command command)
-        {
-            if (command.System == SystemID.SERVER)
-                return this;
+        public IDeviceHandler? GetHandler(Command command) => _handler.GetHandler(command);
 
-            if (_handlers.ContainsKey(command.Port))
-                return _handlers[command.Port];
-
-            return null;
-        }
-
-        #endregion
-        #region IDeviceHandler
-
-        public string Execute(Command command)
-        {
-            return command.Name switch
-            {
-                "PORTS" => GetPorts(),
-                "CREATE" => Create(),
-                "DELETE" => Delete(),
-                _ => "ERR, NOT IMPLEMENTED",
-            };
-        }
-
-        public static string GetPorts()
-        {
-            return string.Join(";", SerialPort.GetPortNames());
-        }
-
-        public string Create()
-        {
-            return "OK";
-        }
-
-        public string Delete()
-        {
-            return "OK";
-        }
+        public void Cleanup() => _handler.Cleanup();
 
         #endregion
         #region Dispose Pattern
@@ -146,6 +110,7 @@ namespace DeviceHost.Core
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
+                    _handler.Cleanup();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -170,6 +135,6 @@ namespace DeviceHost.Core
 
         #endregion
 
-        private readonly Dictionary<string, IDeviceHandler> _handlers = new();
+        private readonly ServerHandler _handler = new();
     }
 }

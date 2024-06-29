@@ -13,5 +13,10 @@ namespace DeviceHost.Core.Handlers
         {
             return "ERR: NOT IMPLEMENTED";
         }
+
+        public void Cleanup()
+        {
+
+        }
     }
 }

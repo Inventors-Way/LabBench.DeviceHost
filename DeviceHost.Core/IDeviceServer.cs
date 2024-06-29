@@ -10,5 +10,7 @@ namespace DeviceHost.Core
     public interface IDeviceServer
     {
         IDeviceHandler? GetHandler(Command command);
+
+        void Cleanup();
     }
 }

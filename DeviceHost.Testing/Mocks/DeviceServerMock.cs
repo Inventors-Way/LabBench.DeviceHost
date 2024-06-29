@@ -35,6 +35,8 @@ namespace DeviceHost.Testing.Mocks
             return null;
         }
 
+        public void Cleanup() { }
+
         public string Execute(Command command) => Server.Execute(command);
 
         public DeviceHandlerMock Server { get; } = new DeviceHandlerMock();

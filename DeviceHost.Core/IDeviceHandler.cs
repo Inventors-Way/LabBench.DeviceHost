@@ -9,5 +9,7 @@ namespace DeviceHost.Core
     public interface IDeviceHandler
     {
         string Execute(Command command);
+
+        void Cleanup();
     }
 }
