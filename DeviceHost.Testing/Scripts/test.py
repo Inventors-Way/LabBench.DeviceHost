@@ -30,17 +30,13 @@ def send_and_receive(message: str, timeout: int = 10) -> str:
             s.settimeout(1)
             
             # Connect to the server
-            logger.info(f"Connecting to 127.0.0.1:9797")
             s.connect(('127.0.0.1', 9797))
             
             # Send the message
-            logger.info(f"Sending message: {message}")
             s.sendall(message.encode('utf-8'))
             
             # Receive the response
-            logger.info("Waiting for response")
             response = s.recv(4096).decode('utf-8')
-            logger.info(f"Received response: {response}")
     
     except socket.timeout:
         logger.error("Socket timed out")
@@ -74,12 +70,19 @@ def LoadScript(filename):
     except IOError:
         return f"Error: Could not read the file '{filename}'."
 
+def RunScript(scriptName):
+    print(f"RUNNING SCRIPT: {scriptName}")
+    response = send_and_receive(LoadScript(scriptName))
+    print(f"Response from server: {response}")
+
+
 def main():
     try:
-        response = send_and_receive(LoadScript("Create.txt"))
-        print(f"Response from server: {response}")
-        response = send_and_receive(LoadScript("Delete.txt"))
-        print(f"Response from server: {response}")
+        RunScript("Create.txt")
+        RunScript("Open.txt")
+        RunScript("Ping.txt")
+        RunScript("Close.txt")
+        RunScript("Delete.txt")
     except Exception as e:
         print(f"An error occurred: {e}")
 
