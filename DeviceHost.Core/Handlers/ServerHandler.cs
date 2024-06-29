@@ -77,7 +77,7 @@ namespace DeviceHost.Core.Handlers
                         return $"ERR: HANDLER ALLREADY CREATED FOR PORT [ {port[0]} ]"; 
                     }
 
-                    _handlers.Add(port[0], new CPARPlusHandler());
+                    _handlers.Add(port[0], new CPARPlusHandler(port[0]));
                     Log.Information("Creating handler [ {device} ] on port [ {port} ]", device[0], port[0]);
 
                     return "OK";
