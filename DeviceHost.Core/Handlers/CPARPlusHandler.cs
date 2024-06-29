@@ -59,7 +59,7 @@ namespace DeviceHost.Core.Handlers
             }
         }
 
-        private string Execute<T>(T function, Func<T, string> onSuccess)
+        private string Run<T>(T function, Func<T, string> onSuccess)
             where T : DeviceFunction
         {
             if (!_device.IsOpen)
@@ -77,7 +77,7 @@ namespace DeviceHost.Core.Handlers
         }
 
         private string Ping() =>
-            Execute(new DeviceIdentification(), (function) =>
+            Run(new DeviceIdentification(), (function) =>
             {
                 if (_device.IsCompatible(function))
                 {
@@ -106,10 +106,8 @@ namespace DeviceHost.Core.Handlers
             }
         }
 
-        public void Cleanup()
-        {
+        public void Cleanup() =>
             _device.Dispose();
-        }
 
         private readonly CPARplusCentral _device;
     }
