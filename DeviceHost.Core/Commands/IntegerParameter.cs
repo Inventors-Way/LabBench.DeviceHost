@@ -48,7 +48,5 @@ namespace DeviceHost.Core.Commands
         public int this[int index] => Values[index];
 
         public int Length => Values.Length;
-
-
     }
 }
