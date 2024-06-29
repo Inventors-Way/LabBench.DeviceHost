@@ -39,6 +39,6 @@ namespace DeviceHost.Testing.Mocks
 
         public DeviceHandlerMock Server { get; } = new DeviceHandlerMock();
 
-        private readonly Dictionary<string, IDeviceHandler> _handlers = new();       
+        private readonly Dictionary<string, IDeviceHandler> _handlers = new();
     }
 }
