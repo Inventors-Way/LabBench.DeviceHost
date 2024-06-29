@@ -1,4 +1,5 @@
 ﻿using CPARplusCommLib;
+using CPARplusCommLib.Messages;
 using Inventors.ECP;
 using Inventors.ECP.Functions;
 using LIOLite.Functions;
@@ -21,6 +22,16 @@ namespace DeviceHost.Core.Handlers
                 Location = port,
                 PingEnabled = true
             };
+            _device.StatusReceived += StatusReceived;
+            _device.EventReceived += EventReceived;
+        }
+
+        private void EventReceived(object? sender, EventMessage e)
+        {            
+        }
+
+        private void StatusReceived(object? sender, StatusMessage e)
+        {            
         }
 
         public string Execute(Command command) => command.Name switch
