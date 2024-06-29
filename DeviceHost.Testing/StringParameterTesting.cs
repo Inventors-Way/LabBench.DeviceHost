@@ -11,7 +11,7 @@ namespace DeviceHost.Testing
     public class StringParameterTesting
     {
         [TestMethod]
-        public void OneValue()
+        public void T01_OneValue()
         {
             var integer = new StringParameter("NAME Hello");
             Assert.IsTrue(integer.Parse(out _));
@@ -21,25 +21,14 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void TwoIntegers()
+        public void T02_TwoValues()
         {
-            var integer = new IntegerParameter("NAME Hello World");
+            var integer = new StringParameter("NAME Hello World");
             Assert.IsTrue(integer.Parse(out _));
             Assert.AreEqual("NAME", integer.Name);
             Assert.AreEqual(2, integer.Length);
-            Assert.AreEqual(2, integer[0]);
-            Assert.AreEqual(3, integer[1]);
-        }
-
-        [TestMethod]
-        public void NegativeInteger()
-        {
-            var integer = new IntegerParameter("NAME 2 -43");
-            Assert.IsTrue(integer.Parse(out _));
-            Assert.AreEqual("NAME", integer.Name);
-            Assert.AreEqual(2, integer.Length);
-            Assert.AreEqual(2, integer[0]);
-            Assert.AreEqual(-43, integer[1]);
+            Assert.AreEqual("Hello", integer[0]);
+            Assert.AreEqual("World", integer[1]);
         }
     }
 }

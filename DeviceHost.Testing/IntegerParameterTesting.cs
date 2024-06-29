@@ -11,7 +11,7 @@ namespace DeviceHost.Testing
     public class IntegerParameterTesting
     {
         [TestMethod]
-        public void OneInteger()
+        public void T01_OneInteger()
         {
             var integer = new IntegerParameter("NAME 2");
             Assert.IsTrue(integer.Parse(out _));
@@ -21,7 +21,7 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void TwoIntegers()
+        public void T02_TwoIntegers()
         {
             var integer = new IntegerParameter("NAME 2 3");
             Assert.IsTrue(integer.Parse(out _));
@@ -32,7 +32,7 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void NegativeInteger()
+        public void T03_NegativeInteger()
         {
             var integer = new IntegerParameter("NAME 2 -43");
             Assert.IsTrue(integer.Parse(out _));

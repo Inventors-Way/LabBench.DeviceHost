@@ -12,22 +12,20 @@ namespace DeviceHost.Testing
     public class UseDirectiveTesting
     {
         [TestMethod]
-        public void UseServer()
+        public void T01_UseServer()
         {
             UseDirective directive = new("USE SERVER");
-
-            Assert.IsTrue(directive.Parse(out string errorMessage));
+            Assert.IsTrue(directive.Parse(out _));
             Assert.AreEqual(directive.System, SystemID.SERVER);
             Assert.AreEqual(directive.Port, "none");
             Assert.AreEqual(directive.Device, DeviceID.None);
         }
 
         [TestMethod]
-        public void UsePort()
+        public void T02_UsePort()
         {
             UseDirective directive = new("USE PORT COM4 CPARPLUS");
-
-            Assert.IsTrue(directive.Parse(out string errorMessage));
+            Assert.IsTrue(directive.Parse(out _));
             Assert.AreEqual(directive.System, SystemID.PORT);
             Assert.AreEqual(directive.Port, "COM4");
             Assert.AreEqual(directive.Device, DeviceID.CPARPlus);
