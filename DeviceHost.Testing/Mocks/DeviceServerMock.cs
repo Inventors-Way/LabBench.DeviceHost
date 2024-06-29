@@ -12,6 +12,18 @@ namespace DeviceHost.Testing.Mocks
         IDeviceServer,
         IDeviceHandler
     {
+        public DeviceServerMock Add(string port, IDeviceHandler handler)
+        {
+            if (_handlers.ContainsKey(port))
+            {
+                _handlers[port] = handler;
+                return this;
+            }
+
+            _handlers.Add(port, handler);
+            return this;
+        }
+
         public IDeviceHandler? GetHandler(UseDirective directive)
         {
             if (directive.System == SystemID.SERVER)
