@@ -10,10 +10,10 @@ namespace DeviceHost.Core
 {
     public class Command
     {
-        public static bool Create(string content, out Command command, out string errorMessage)
+        public static bool Create(string content, string apiKey, out Command command, out string errorMessage)
         {
             command = new Command(content);
-            return command.Parse(out errorMessage);
+            return command.Parse(apiKey, out errorMessage);
         }
 
         public SystemID System { get; private set; } = SystemID.SERVER;
@@ -33,7 +33,7 @@ namespace DeviceHost.Core
                       select line.Trim()).ToArray();
         }
 
-        private bool Parse(out string errorMessage)
+        private bool Parse(string apiKey, out string errorMessage)
         {
             if (_lines.Length < 4) 
             {
@@ -46,6 +46,9 @@ namespace DeviceHost.Core
                 errorMessage = "ERR:INVALID START OF COMMAND";
                 return false;
             }
+
+            if (!VerifyKey(apiKey, out errorMessage))
+                return false;
 
             if (!_lines[1].StartsWith("USE"))
             {
@@ -88,17 +91,30 @@ namespace DeviceHost.Core
             return true;
         }
 
-        public bool VerifyKey(string apiKey)
+        public bool VerifyKey(string apiKey, out string errorMessage)
         {
             if (!startRegex.IsMatch(_lines[0]))
-                throw new InvalidOperationException("INVALID START OF COMMAND");
+            {
+                errorMessage = "INVALID START OF COMMAND";
+                return false;
+            }
 
             var parts = _lines[0].Split(' ');
 
             if (parts.Length != 2)
-                throw new InvalidOperationException("NO API KEY FOUND IN START OF COMMAND");
+            {
+                errorMessage = "NO API KEY FOUND IN START OF COMMAND";
+                return false;
+            }
 
-            return parts[1] == apiKey;
+            if (!(parts[1].Trim() == apiKey))
+            {
+                errorMessage = "INVALID API KEY";
+                return false;
+            }
+
+            errorMessage = string.Empty;
+            return true;
         }
 
         private readonly string[] _lines;
