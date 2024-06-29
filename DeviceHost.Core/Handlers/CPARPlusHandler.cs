@@ -1,4 +1,5 @@
 ﻿using CPARplusCommLib;
+using CPARplusCommLib.Functions;
 using CPARplusCommLib.Messages;
 using Inventors.ECP;
 using Inventors.ECP.Functions;
@@ -60,8 +61,31 @@ namespace DeviceHost.Core.Handlers
             "CLOSE" => Close(),
             "STATE" => State(),
             "PING" => Ping(),
+            "CLEAR" => Clear(),
+            "START" => Start(command),
+            "STOP" => Stop(),
+            "WAVEFORM" => Waveform(command),
             _ => $"ERR;UNKNOWN COMMAND [ {command.Name} ]"
         };
+
+        private string Start(Command command)
+        {
+            if (!command.Start(out StartStimulation function, out string error))
+                return error;
+
+            return Run(function, (function) => "OK;");
+        }
+
+        private string Stop() =>
+            Run(new StopStimulation(), (function) => "OK;");
+
+        private string Waveform(Command command)
+        {
+            if (!command.Waveform(out SetWaveformProgram function, out string error))
+                return error;
+
+            return Run(function, (function) => "OK;");
+        }
 
         private string Open()
         {
@@ -139,6 +163,9 @@ namespace DeviceHost.Core.Handlers
                     return $"ERR:Incompatible device [ {device} ];";
                 }
             });
+
+        private string Clear() =>
+            Run(new ClearWaveformPrograms(), (function) => "OK;");
 
         private string Close()
         {
