@@ -30,5 +30,20 @@ namespace DeviceHost.Testing
             Console.WriteLine(msg);
         }
 
+        [TestMethod]
+        public void T03_Create()
+        {
+            var script = TestUtility.GetScript("Create.txt");
+            Assert.IsTrue(Command.Create(script, "1234", out Command command, out string _));
+
+            Assert.IsTrue(command.VerifyKey("1234", out string _));
+            Assert.AreEqual(SystemID.SERVER, command.System);
+            Assert.AreEqual(string.Empty, command.Port);
+            Assert.AreEqual("CREATE", command.Name);
+            Assert.AreEqual(2, command.Content.Length);
+            Assert.AreEqual("PORT COM4", command.Content[0]);
+            Assert.AreEqual("DEVICE CPARPLUS", command.Content[1]);
+        }
+
     }
 }
