@@ -167,6 +167,8 @@ namespace DeviceHost.Core.Handlers
                 sb.AppendLine($"Condition {status.Condition};");
                 sb.AppendLine($"VasScore {((int) (status.VasScore*10))};");
                 sb.AppendLine($"FinalVasScore {((int) (status.FinalVasScore*10))};");
+                sb.AppendLine($"FinalPressure01 {((int)(status.FinalPressure01 * 10))};");
+                sb.AppendLine($"FinalPressure02 {((int)(status.FinalPressure02 * 10))};");
                 sb.AppendLine($"SupplyPressure {((int) status.SupplyPressure)};");
                 sb.Append($"StopPressed {status.StopPressed};");
 
