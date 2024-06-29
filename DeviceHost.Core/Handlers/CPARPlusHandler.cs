@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading; 
 
 namespace DeviceHost.Core.Handlers
 {
@@ -20,11 +21,26 @@ namespace DeviceHost.Core.Handlers
         {
             _device = new CPARplusCentral()
             {
-                Location = port,
-                PingEnabled = true
+                Location = port
             };
             _device.StatusReceived += StatusReceived;
             _device.EventReceived += EventReceived;
+            timer = new Timer(DeviceTick, null, 0, 1000);
+        }
+
+        private void DeviceTick(object? state)
+        {
+            try
+            {
+                if (!_device.IsOpen)
+                    return;
+
+                _device.Execute(new Ping());
+            }
+            catch (Exception ex) 
+            {
+                Log.Warning("Ping failed: {exception}", ex);
+            }
         }
 
         private void EventReceived(object? sender, EventMessage msg)
@@ -100,16 +116,14 @@ namespace DeviceHost.Core.Handlers
             {
                 var builder = new StringBuilder();
 
-                builder.AppendLine("Pressure01;Target01;Pressure02;Target01;Rating;");
+                builder.AppendLine("Pressure01;Pressure02;Rating;");
 
                 while (statusQueue.Count > 0)
                 {
                     var item = statusQueue.Dequeue();
 
                     builder.Append($"{PressureToInteger(item.ActualPressure01)};");
-                    builder.Append($"{PressureToInteger(item.TargetPressure01)};");
                     builder.Append($"{PressureToInteger(item.ActualPressure02)};");
-                    builder.Append($"{PressureToInteger(item.TargetPressure02)};");
                     builder.AppendLine($"{RatingToInteger(item.VasScore)};");
                 }
 
@@ -214,13 +228,17 @@ namespace DeviceHost.Core.Handlers
             }
         }
 
-        public void Cleanup() =>
+        public void Cleanup()
+        {
+            timer.Dispose();
             _device.Dispose();
+        }
 
         private readonly CPARplusCentral _device;
         private readonly object lockObject = new object();
         private readonly Queue<StatusMessage> statusQueue = new();
         private StatusMessage? status;
         private bool stimulating = false;
+        private readonly Timer timer;
     }
 }

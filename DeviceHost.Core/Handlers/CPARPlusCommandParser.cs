@@ -17,7 +17,7 @@ namespace DeviceHost.Core.Handlers
             ((double)x) / 1000.0;
 
         public static double ToPressure(int x) =>
-            ((double)x) / 1000.0;
+            ((double)x) / 10.0;
 
         public static bool Waveform(this Command command, out SetWaveformProgram function, out string error)
         {
