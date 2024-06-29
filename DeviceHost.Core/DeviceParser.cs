@@ -46,7 +46,21 @@ namespace DeviceHost.Core
 
         public string ParseCommand(string content)
         {
-            return "";
+            if (Command.Create(content, ApiKey, out Command command, out string errorMessage))
+            {
+                if (_server.GetHandler(command) is IDeviceHandler handler)
+                {
+                    return handler.Execute(command);
+                }
+                else
+                {
+                    return "ERR:NO HANDLER FOUND";
+                }
+            }
+            else
+            {
+                return errorMessage;
+            }
         }
 
         private IDeviceServer _server;
