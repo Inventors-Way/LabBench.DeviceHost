@@ -18,8 +18,8 @@ namespace DeviceHost.Core.Commands
 
         public abstract bool Parse(out string errorMessage);
 
-        protected string Content { get; }
+        public string Content { get; }
 
-        protected string[] Parts { get; }
+        public string[] Parts { get; }
     }
 }
