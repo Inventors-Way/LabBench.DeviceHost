@@ -1,8 +1,10 @@
 ﻿using CPARplusCommLib;
 using CPARplusCommLib.Functions;
 using DeviceHost.Core.Commands;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +22,11 @@ namespace DeviceHost.Core.Handlers
         public static bool Waveform(this Command command, out SetWaveformProgram function, out string error)
         {
             function = new SetWaveformProgram();
+            error = string.Empty;
 
             if (command.Content.Length < 4)
             {
-                error = "Invalid content for start command";
+                error = "Invalid content for WAVEFORM command";
                 return false;
             }
 
@@ -93,9 +96,62 @@ namespace DeviceHost.Core.Handlers
             return true;
         }
 
+        public static StopCriterion ParseStopCriterion(int value)
+        {
+            switch (value)
+            {
+                case 0: return StopCriterion.STOP_CRITERION_ON_BUTTON_VAS;
+                case 1: return StopCriterion.STOP_CRITERION_ON_BUTTON_PRESSED;
+                case 2: return StopCriterion.STOP_CRITERION_ON_BUTTON_RELEASED;
+                default:
+                    Log.Warning("UNKNOWN STOP CRITERION [ {value} ]", value);
+                    return StopCriterion.STOP_CRITERION_ON_BUTTON_VAS;
+            }
+        }
+
+        private static DeviceChannelID ParseChannel(int value)
+        {
+            switch (value)
+            {
+                case 0: return DeviceChannelID.NONE;
+                case 1: return DeviceChannelID.CH01;
+                case 2: return DeviceChannelID.CH02;
+                default:
+                    Log.Warning("UNKNOWN DEVICE CHANNEL [ {value} ]", value);
+                    return DeviceChannelID.NONE;
+            }
+        }
+
+
         public static bool Start(this Command command, out StartStimulation function, out string error)
         {
+            function = new StartStimulation();
 
+            if (command.Content.Length != 5)
+            {
+                error = "Invalid content for START command";
+                return false;
+            }
+
+            var criterion = new IntegerParameter(command.Content[0], 1, "STOPCRITERION");
+            var trigger = new IntegerParameter(command.Content[0], 1, "EXTERNALTRIGGER");
+            var overrideRating = new IntegerParameter(command.Content[0], 1, "OVERRIDERATING");
+            var outlet01 = new IntegerParameter(command.Content[0], 1, "OUTLET01");
+            var outlet02 = new IntegerParameter(command.Content[0], 1, "OUTLET02");
+
+            if (!criterion.Parse(out error)) return false;
+            if (!trigger.Parse(out error)) return false;
+            if (!overrideRating.Parse(out error)) return false;
+            if (!outlet01.Parse(out error)) return false;
+            if (!outlet02.Parse(out error)) return false;
+
+            function.Criterion = ParseStopCriterion(criterion[0]);
+            function.ExternalTrigger = trigger[0] != 0;
+            function.OverrideRating = overrideRating[0] != 0;
+            function.Outlet01 = ParseChannel(outlet01[0]);
+            function.Outlet02 = ParseChannel(outlet02[0]);
+
+            return true;
             throw new NotImplementedException();
         }
     }
