@@ -90,6 +90,7 @@ namespace DeviceHost.Core.Handlers
                 StringBuilder sb = new StringBuilder();
 
                 sb.AppendLine($"State {status.SystemState};");
+                sb.AppendLine($"Stimulating {stimulating};");
                 sb.AppendLine($"VasConnected {status.VasConnected};");
                 sb.AppendLine($"VasIsLow {status.VasIsLow};");
                 sb.AppendLine($"PowerOn {status.PowerOn};");
