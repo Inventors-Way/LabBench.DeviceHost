@@ -42,22 +42,38 @@ which will result in the following dialog:
 
 In which you must choose Keep Anyway in order to successfully download the LabBench Device Host. In the future, once the LabBench Device Host is out of Beta, we plan to create a signed installer that bypasses this problem.
 
-## Running
+## Starting the device host
+
+The device host can be started with its default configuration by calling the ```devhost``` command without any parameters:
+
+![Starting the Device Host](StartingDevHost.png)
+
+The text displayed by the Device Host is its log output. If your 3rd party software does not work as intended it can be helpful to check this log for error messages as these are more detailed than the error codes returned by the Device Host over the socket interface.
+
+The Device Host can be configured with the following command line parameters:
+
+|Parameter          | Description|
+|-------------------|-----------|
+|```-k --api-key``` | The API Key for the device host (default: 1234) |
+|```-a --address``` | The address on which to host the device host (default: 127.0.0.1 / localhost) |
+|```-p --port```    | The port on which to bind the device host (default: 9797) |
+|```-l --log-file```| Log File to which to write the log, if left out the log will only be written to console. |
+
+Help for these can also be shown by calling the devhost with a ```--help``` parameter.
 
 
 ## Using the DeviceHost from 3rd party software
 
 
-
-## Devices 
-
-### Server Commands
+## Server Commands
 
 #### PORTS
 
 #### CREATE
 
 #### DELETE
+
+## Devices 
 
 ### LabBench CPAR+ Device Commands
 
