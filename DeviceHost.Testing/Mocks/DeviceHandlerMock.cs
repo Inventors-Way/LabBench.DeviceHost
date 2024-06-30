@@ -14,7 +14,7 @@ namespace DeviceHost.Testing.Mocks
         {
             CommandReceived = true;
             Command = command;
-            return "OK";
+            return Response.OK();
         }
 
         public void Cleanup() { }
