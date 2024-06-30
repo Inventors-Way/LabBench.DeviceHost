@@ -124,8 +124,8 @@ namespace DeviceHost.Core.Handlers
                 var sb = new StringBuilder();
                 sb.AppendLine($"VasScore {((int)(status.VasScore * 10))};");
                 sb.AppendLine($"FinalVasScore {((int)(status.FinalVasScore * 10))};");
-                sb.Append($"Button {status.StopPressed};");
-                sb.Append($"LatchedButton {latchedButton};");
+                sb.AppendLine($"Button {(status.StopPressed ? 1 : 0)};");
+                sb.Append($"LatchedButton {(latchedButton ? 1 : 0)};");
                 latchedButton = false;
 
                 return sb.ToString();  
@@ -181,15 +181,14 @@ namespace DeviceHost.Core.Handlers
                 StringBuilder sb = new StringBuilder();
 
                 sb.AppendLine($"State {status.SystemState};");
-                sb.AppendLine($"Stimulating {stimulating};");
-                sb.AppendLine($"VasConnected {status.VasConnected};");
-                sb.AppendLine($"VasIsLow {status.VasIsLow};");
-                sb.AppendLine($"PowerOn {status.PowerOn};");
-                sb.AppendLine($"StartPossible {status.StartPossible};");
-                sb.AppendLine($"SupplyPressureLow {status.SupplyPressureLow};");
+                sb.AppendLine($"VasConnected {(status.VasConnected ? 1 : 0)};");
+                sb.AppendLine($"VasIsLow {(status.VasIsLow ? 1 : 0)};");
+                sb.AppendLine($"PowerOn {(status.PowerOn ? 1 : 0)};");
+                sb.AppendLine($"StartPossible {(status.StartPossible ? 1 : 0)};");
                 sb.AppendLine($"Condition {status.Condition};");
                 sb.AppendLine($"FinalPressure01 {((int)(status.FinalPressure01 * 10))};");
                 sb.AppendLine($"FinalPressure02 {((int)(status.FinalPressure02 * 10))};");
+                sb.AppendLine($"SupplyPressureLow {(status.SupplyPressureLow ? 1 : 0)};");
                 sb.AppendLine($"SupplyPressure {((int) status.SupplyPressure)};");
 
                 return sb.ToString();

@@ -87,10 +87,10 @@ def RunStimulation():
         RunScript("Ping.txt")
         RunScript("Waveform.txt")
         RunScript("Start.txt")
-        RunScript("Response.txt")
 
         print("WAITING FOR 5S")
         time.sleep(5)
+        RunScript("Rating.txt")
         RunScript("State.txt")
         RunScript("Signals.txt")
 
@@ -109,5 +109,5 @@ def TestRating():
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    TestRating()
+    RunStimulation()
 
