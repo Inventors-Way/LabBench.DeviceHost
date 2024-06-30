@@ -64,14 +64,97 @@ Help for these can also be shown by calling the devhost with a ```--help``` para
 
 ## Using the DeviceHost from 3rd party software
 
+### General format for commands
+
+The general format for all commands is shown below:
+
+```
+START [API-KEY];
+USE [SYSTEM] {PORT} {DEVICE};
+CMD [COMMAND];
+{COMMAND STATEMENTS}
+END;
+```
+
+This format consists of a list of statements each terminated by a semicoloon ```;```. The ```[]``` notation means a part that is mandatory and must be specified for all commands, and the ```{}``` specifies a part that is only mandatory for certain types of systems or commands.
+
+#### START Statement
+
+All commands must start with a START Statement of the form:
+
+```
+START [API-KEY];
+```
+
+Where the ```[API-KEY]``` is configured when the device host is envoked. Commands send to the Device Host with a wrong API key will not be executed. However, for security purposes the Device Host will in the case of a wrong API key pretent it was successfull and respond with a ```OK;``` response. 
+
+Please monitor the log, where an error will be displayed, if you suspect that this is the case for your 3rd party software.
+
+#### USE Statement
+
+Following the START Statement all commands must be followed by a USE statement in the following format:
+
+```
+USE [SYSTEM] {PORT} {DEVICE};
+```
+
+The ```SYSTEM``` parameter specifies which system to use. Possible values:
+
+1. **SERVER**: Internal functionality for listing ports, creating and deleting device handlers.
+2. **PORT**: Functionality to communicate with LabBench devices.
+
+The ```PORT``` parameter is required for the PORT system, and specifies which port to access (i.e. COM4).
+
+The ```DEVICE``` parameter specifies which device the host should expect to find on the port. Possible values:
+
+1. **CPARPLUS**: The LabBench CPAR+ device.
+
+#### CMD Statement
+
+```
+CMD [COMMAND];
+{COMMAND STATEMENTS}
+```
+
+#### END Statement
+
+All commands must end with an END statement in the following format:
+
+```
+END;
+```
 
 ## Server Commands
 
 #### PORTS
 
+```
+START 1234;
+USE SERVER;
+CMD PORTS;
+END;
+```
+
 #### CREATE
 
+```
+START 1234;
+USE SERVER;
+CMD CREATE;
+PORT COM8; 
+DEVICE CPARPLUS;
+END;
+```
+
 #### DELETE
+
+```
+START 1234;
+USE SERVER;
+CMD DELETE;
+PORT COM8;
+END;
+```
 
 ## Devices 
 
@@ -79,21 +162,57 @@ Help for these can also be shown by calling the devhost with a ```--help``` para
 
 #### OPEN
 
+```
+
+```
+
 #### CLOSE
+
+```
+
+```
 
 #### PING
 
+```
+
+```
+
 #### WAVEFORM
+
+```
+
+```
 
 #### START
 
+```
+
+```
+
 #### STOP
+
+```
+
+```
 
 #### STATE
 
+```
+
+```
+
 #### SIGNALS
 
+```
+
+```
+
 #### RATING
+
+```
+
+```
 
 
 ## Error Codes
