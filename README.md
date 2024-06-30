@@ -12,4 +12,90 @@ CMD PING;
 END;
 ```
 
-To a socket whos IP address and port number if configured when starting the LabBench Device Host. If a CPAR+ device is found on COM8 
+To a socket whos IP address and port number if configured when starting the LabBench Device Host. If a CPAR+ device is found on COM8 the Device Host will respond with:
+
+```
+OK;CPAR+ DUE, Rev. 1.0.1;
+```
+
+In general commands will respond with either ```OK;```, ```ERR;[Error Code]```, or ```[Data from the device]```. For example, if no device was connected to COM8 the command will instead respond with:
+
+```
+ERR;DeviceClosed;
+```
+
+For a full list of possible error codes, please see section Error Codes
+
+## Installation
+
+
+## Running
+
+
+## Using the DeviceHost from 3rd party software
+
+
+
+## Devices 
+
+### Server Commands
+
+#### PORTS
+
+#### CREATE
+
+#### DELETE
+
+### LabBench CPAR+ Device Commands
+
+#### OPEN
+
+#### CLOSE
+
+#### PING
+
+#### WAVEFORM
+
+#### START
+
+#### STOP
+
+#### STATE
+
+#### SIGNALS
+
+#### RATING
+
+
+## Error Codes
+
+|Code|Description|
+|----|-----------|
+|NoHandlerFound| |
+|InvalidCommandFormat| |
+|InvalidStartOfCommand| |
+|MissingUseStatement| |
+|InvalidEndOfCommand| |
+|NoCommandStatement| |
+|NoApiKey| |
+|InvalidNumberOfInstructions| |
+|InvalidStepInstruction| |
+|InvalidIncrementInstruction| |
+|InvalidDecrementInstruction| |
+|UnknownInstruction| |
+|InvalidStartCommandContent| |
+|InvalidParameterSpecification| |
+|InvalidInteger| |
+|UnknownCommand| |
+|OpenFailed| |
+|NoStatus| |
+|DeviceClosed| |
+|CommunicationFailure| |
+|IncompatibleDevice| |
+|CloseFailed| |
+|InvalidCommandContent| |
+|NoPortStatement| |
+|NoDeviceStatement| |
+|HandlerExists| |
+|UnknownDevice| |
+

@@ -105,11 +105,13 @@ def stimulate():
 def getRating():
     try:
         run("Create.txt")
-        run("Rating.txt")
+        run("Open.txt")
+        run("Ping.txt")
+        run("Close.text")
         run("Delete.txt")
     except Exception as e:
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    stimulate()
+    getRating()
 
