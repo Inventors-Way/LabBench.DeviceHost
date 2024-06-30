@@ -38,6 +38,8 @@ def send_and_receive(message: str, timeout: int = 10) -> str:
             
             # Receive the response
             response = s.recv(4096).decode('utf-8')
+
+            s.close()
     
     except socket.timeout:
         logger.error("Socket timed out")
