@@ -68,6 +68,9 @@ namespace DeviceHost.Core.Handlers
                     statusQueue.Enqueue(msg);
 
                 status = msg;
+
+                if (msg.StopPressed)
+                    latchedButton = true;
             }
         }
 
@@ -82,6 +85,7 @@ namespace DeviceHost.Core.Handlers
             "STOP" => Stop(),
             "WAVEFORM" => Waveform(command),
             "SIGNALS" => Signals(),
+            "RESPONSE" => GetResponse(),
             _ => Response.Error(ErrorCode.UnknownCommand)
         };
 
@@ -104,11 +108,29 @@ namespace DeviceHost.Core.Handlers
             return Run(function, (function) => Response.OK());
         }
 
-        private int PressureToInteger(double pressure) =>
+        private static int PressureToInteger(double pressure) =>
             (int)(pressure * 10);
 
-        private int RatingToInteger(double vas) =>
+        private static int RatingToInteger(double vas) =>
             (int)(vas * 10);
+
+        public string GetResponse()
+        {
+            lock (lockObject)
+            {
+                if (status is null)
+                    return Response.Error(ErrorCode.NoStatus);
+
+                var sb = new StringBuilder();
+                sb.AppendLine($"VasScore {((int)(status.VasScore * 10))};");
+                sb.AppendLine($"FinalVasScore {((int)(status.FinalVasScore * 10))};");
+                sb.Append($"Button {status.StopPressed};");
+                sb.Append($"LatchedButton {latchedButton};");
+                latchedButton = false;
+
+                return sb.ToString();  
+            }
+        }
 
         private string Signals()
         {
@@ -166,12 +188,9 @@ namespace DeviceHost.Core.Handlers
                 sb.AppendLine($"StartPossible {status.StartPossible};");
                 sb.AppendLine($"SupplyPressureLow {status.SupplyPressureLow};");
                 sb.AppendLine($"Condition {status.Condition};");
-                sb.AppendLine($"VasScore {((int) (status.VasScore*10))};");
-                sb.AppendLine($"FinalVasScore {((int) (status.FinalVasScore*10))};");
                 sb.AppendLine($"FinalPressure01 {((int)(status.FinalPressure01 * 10))};");
                 sb.AppendLine($"FinalPressure02 {((int)(status.FinalPressure02 * 10))};");
                 sb.AppendLine($"SupplyPressure {((int) status.SupplyPressure)};");
-                sb.Append($"StopPressed {status.StopPressed};");
 
                 return sb.ToString();
             }
@@ -245,5 +264,6 @@ namespace DeviceHost.Core.Handlers
         private StatusMessage? status;
         private bool stimulating = false;
         private readonly Timer timer;
+        private bool latchedButton;
     }
 }
