@@ -82,7 +82,7 @@ namespace DeviceHost.Core.Handlers
             "STOP" => Stop(),
             "WAVEFORM" => Waveform(command),
             "SIGNALS" => Signals(),
-            _ => $"ERR;UNKNOWN COMMAND [ {command.Name} ]"
+            _ => Response.Error(ErrorCode.UnknownCommand)
         };
 
         private string Start(Command command)
@@ -90,18 +90,18 @@ namespace DeviceHost.Core.Handlers
             if (!command.Start(out StartStimulation function, out string error))
                 return error;
 
-            return Run(function, (function) => "OK;");
+            return Run(function, (function) => Response.OK());
         }
 
         private string Stop() =>
-            Run(new StopStimulation(), (function) => "OK;");
+            Run(new StopStimulation(), (function) => Response.OK());
 
         private string Waveform(Command command)
         {
             if (!command.Waveform(out SetWaveformProgram function, out string error))
                 return error;
 
-            return Run(function, (function) => "OK;");
+            return Run(function, (function) => Response.OK());
         }
 
         private int PressureToInteger(double pressure) =>
@@ -134,17 +134,18 @@ namespace DeviceHost.Core.Handlers
         private string Open()
         {
             if (_device.IsOpen)
-                return "OK;";
+                return Response.OK();
 
             try
             {
                 _device.Open();
                 Log.Information("Device on port [ {port} ] opened", _device.Location);
-                return "OK;";
+                return Response.OK();
             }
             catch (Exception ex) 
             {
-                return $"ERR;{ex.Message}";
+                Log.Error(ex.Message);
+                return Response.Error(ErrorCode.OpenFailed);
             }
         }
 
@@ -153,7 +154,7 @@ namespace DeviceHost.Core.Handlers
             lock (lockObject)
             {
                 if (status is null)
-                    return "ERR;No status";
+                    return Response.Error(ErrorCode.NoStatus);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -180,7 +181,7 @@ namespace DeviceHost.Core.Handlers
             where T : DeviceFunction
         {
             if (!_device.IsOpen)
-                return "ERR;Device is closed;";
+                return Response.Error(ErrorCode.DeviceClosed);
 
             try
             {
@@ -189,7 +190,8 @@ namespace DeviceHost.Core.Handlers
             }
             catch (Exception ex)
             {
-                return $"ERR;{ex.Message}";
+                Log.Error(ex.Message);
+                return Response.Error(ErrorCode.CommunicationFailure);
             }
         }
 
@@ -206,27 +208,28 @@ namespace DeviceHost.Core.Handlers
                 else
                 {
                     Log.Error("PING: INCOMPATIBLE DEVICE: {device}", device);
-                    return $"ERR:Incompatible device [ {device} ];";
+                    return Response.Error(ErrorCode.IncompatibleDevice);
                 }
             });
 
         private string Clear() =>
-            Run(new ClearWaveformPrograms(), (function) => "OK;");
+            Run(new ClearWaveformPrograms(), (function) => Response.OK());
 
         private string Close()
         {
             if (!_device.IsOpen)
-                return "OK;";
+                return Response.OK();
 
             try
             {
                 _device.Close();
                 Log.Information("Device on port [ {port} ] closed", _device.Location);
-                return "OK;";
+                return Response.OK();
             }
             catch (Exception ex)
             {
-                return $"ERR;{ex.Message};";
+                Log.Error(ex.Message);
+                return Response.Error(ErrorCode.CloseFailed);
             }
         }
 

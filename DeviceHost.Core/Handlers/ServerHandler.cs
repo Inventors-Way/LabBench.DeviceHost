@@ -32,13 +32,13 @@ namespace DeviceHost.Core.Handlers
             }
         }
 
-        public string Execute(Command command)=>
+        public string Execute(Command command) =>
             command.Name switch
             {
                 "PORTS" => GetPorts(),
                 "CREATE" => Create(command),
                 "DELETE" => Delete(command),
-                _ => "ERR, NOT IMPLEMENTED",
+                _ => Response.Error(ErrorCode.UnknownCommand)
             };        
 
         public static string GetPorts()
@@ -50,7 +50,7 @@ namespace DeviceHost.Core.Handlers
         {
             if (command.Content.Length != 2)
             {
-                return "ERR:WRONG COMMAND CONTENT";
+                return Response.Error(ErrorCode.InvalidCommandContent);
             }
 
             var port = new StringParameter(command.Content[0], 1);
@@ -60,13 +60,13 @@ namespace DeviceHost.Core.Handlers
                 return portError;
 
             if (port.Name != "PORT")
-                return "ERR:NO PORT STATEMENT";
+                return Response.Error(ErrorCode.NoPortStatement);
 
             if (!device.Parse(out string deviceError))
                 return deviceError;
 
             if (device.Name != "DEVICE")
-                return "ERR:NO DEVICE STATEMENT";
+                return Response.Error(ErrorCode.NoDeviceStatement);
 
             switch (device[0])
             {
@@ -74,15 +74,15 @@ namespace DeviceHost.Core.Handlers
                     if (_handlers.ContainsKey(port[0]))
                     {
                         Log.Error("Error: attempting to create handler on an allready bound port");
-                        return $"ERR: HANDLER ALLREADY CREATED FOR PORT [ {port[0]} ]"; 
+                        return Response.Error(ErrorCode.HandlerExists);
                     }
 
                     _handlers.Add(port[0], new CPARPlusHandler(port[0]));
                     Log.Information("Creating handler [ {device} ] on port [ {port} ]", device[0], port[0]);
 
-                    return "OK";
+                    return Response.OK(); 
 
-                default: return $"ERR: UNKNOWN DEVICE [ {device[0]} ]";
+                default: return Response.Error(ErrorCode.UnknownDevice);
             }
         }
 
@@ -90,7 +90,7 @@ namespace DeviceHost.Core.Handlers
         {
             if (command.Content.Length != 1)
             {
-                return "ERR:WRONG COMMAND CONTENT";
+                return Response.Error(ErrorCode.InvalidCommandContent);
             }
 
             var port = new StringParameter(command.Content[0], 1);
@@ -99,17 +99,17 @@ namespace DeviceHost.Core.Handlers
                 return portError;
 
             if (port.Name != "PORT")
-                return "ERR:NO PORT STATEMENT";
+                return Response.Error(ErrorCode.NoPortStatement);
 
             if (!_handlers.ContainsKey(port[0]))
-                return $"ERR:NO HANDLER FOUND FOR PORT [ {port[0]} ]";
+                return Response.OK();
 
             _handlers[port[0]].Cleanup();
             _handlers.Remove(port[0]);
 
             Log.Information("Handler deleted for port [ {port} ]", port[0]);
 
-            return "OK";
+            return Response.OK();
         }
 
         private readonly Dictionary<string, IDeviceHandler> _handlers = new();

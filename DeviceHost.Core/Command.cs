@@ -1,4 +1,5 @@
 ﻿using DeviceHost.Core.Commands;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,13 +38,19 @@ namespace DeviceHost.Core
         {
             if (_lines.Length < 4) 
             {
-                errorMessage = $"ERR:INVALID COMMAND FORMAT, CONTENT TOO SHORT (lines < 4, lines = {_lines.Length})";
+                errorMessage = Response.Error(ErrorCode.InvalidCommandFormat);
                 return false;
             }
 
             if (!startRegex.IsMatch(_lines[0])) 
             {
-                errorMessage = "ERR:INVALID START OF COMMAND";
+                errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
+                return false;
+            }
+
+            if (!_lines[^1].Contains("END"))
+            {
+                errorMessage = Response.Error(ErrorCode.InvalidEndOfCommand);
                 return false;
             }
 
@@ -52,13 +59,7 @@ namespace DeviceHost.Core
 
             if (!_lines[1].StartsWith("USE"))
             {
-                errorMessage = "ERR:MISSING USE INSTRUCTION";
-                return false;
-            }
-
-            if (!_lines[^1].Contains("END"))
-            {
-                errorMessage = "ERR:INVALID END OF COMMAND";
+                errorMessage = Response.Error(ErrorCode.MissingUseStatement);
                 return false;
             }
 
@@ -78,7 +79,7 @@ namespace DeviceHost.Core
 
             if (cmdDirective.Name != "CMD")
             {
-                errorMessage = "ERR:NO COMMAND DIRECTIVE";
+                errorMessage = Response.Error(ErrorCode.NoCommandStatement);
                 return false;
             }
 
@@ -95,7 +96,7 @@ namespace DeviceHost.Core
         {
             if (!startRegex.IsMatch(_lines[0]))
             {
-                errorMessage = "INVALID START OF COMMAND";
+                errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
                 return false;
             }
 
@@ -103,13 +104,16 @@ namespace DeviceHost.Core
 
             if (parts.Length != 2)
             {
-                errorMessage = "NO API KEY FOUND IN START OF COMMAND";
+                errorMessage = Response.Error(ErrorCode.NoApiKey);
+                Log.Error("MISSING API KEY");
                 return false;
             }
 
             if (!(parts[1].Trim() == apiKey))
             {
-                errorMessage = "INVALID API KEY";
+                errorMessage = Response.OK();
+                Log.Error("INVALID API KEY, REPORTED AS OK DUE TO SECURITY CONCERNS [ Actual: {actual}, Expected: {expected} ]",
+                    parts[1].Trim(), apiKey);
                 return false;
             }
 

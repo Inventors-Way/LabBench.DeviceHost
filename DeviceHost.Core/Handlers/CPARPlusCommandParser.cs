@@ -26,7 +26,7 @@ namespace DeviceHost.Core.Handlers
 
             if (command.Content.Length < 4)
             {
-                error = "ERR;Invalid content for WAVEFORM command;";
+                error = Response.Error(ErrorCode.InvalidCommandContent);
                 return false;
             }
 
@@ -43,7 +43,7 @@ namespace DeviceHost.Core.Handlers
 
             if (instructions[0] != command.Content.Length - 3)
             {
-                error = "ERR;Invalid content for start command, number of instructions does not match instruction declaration;";
+                error = Response.Error(ErrorCode.InvalidNumberOfInstructions);
                 return false;
             }
 
@@ -58,7 +58,7 @@ namespace DeviceHost.Core.Handlers
                     case "STEP":
                         if (instruction.Length != 2)
                         {
-                            error = "ERR;Invalid number of parameters for STEP instruction;";
+                            error = Response.Error(ErrorCode.InvalidStepInstruction);
                             return false;
                         }
                         function.Instructions.Add(WaveformInstruction.Step(
@@ -69,7 +69,7 @@ namespace DeviceHost.Core.Handlers
                     case "INC":
                         if (instruction.Length != 2)
                         {
-                            error = "ERR;Invalid number of parameters for INC instruction;";
+                            error = Response.Error(ErrorCode.InvalidIncrementInstruction);
                             return false;
                         }
                         function.Instructions.Add(WaveformInstruction.Increment(
@@ -79,7 +79,7 @@ namespace DeviceHost.Core.Handlers
                     case "DEC":
                         if (instruction.Length != 2)
                         {
-                            error = "ERR;Invalid number of parameters for DEC instruction;";
+                            error = Response.Error(ErrorCode.InvalidDecrementInstruction);
                             return false;
                         }
                         function.Instructions.Add(WaveformInstruction.Decrement(
@@ -87,7 +87,7 @@ namespace DeviceHost.Core.Handlers
                             time: ToSeconds(instruction[1])));
                         break;
                     default:
-                        error = $"ERR;Invalid instruction [ {instruction.Name} ];";
+                        error = Response.Error(ErrorCode.UnknownInstruction);
                         return false;
                 }                
             }
@@ -129,7 +129,8 @@ namespace DeviceHost.Core.Handlers
 
             if (command.Content.Length != 5)
             {
-                error = "ERR;Invalid content for START command;";
+                error = error = Response.Error(ErrorCode.InvalidStartCommandContent);
+
                 return false;
             }
 

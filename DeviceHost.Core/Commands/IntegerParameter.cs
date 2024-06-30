@@ -18,7 +18,7 @@ namespace DeviceHost.Core.Commands
         {
             if (Parts.Length < 2)
             {
-                errorMessage = "INVALID PARAMETER SPECIFICATION";
+                errorMessage = Response.Error(ErrorCode.InvalidParameterSpecification);
                 return false;
             }
 
@@ -36,7 +36,7 @@ namespace DeviceHost.Core.Commands
             {
                 if (!int.TryParse(Parts[n], out int value))
                 {
-                    errorMessage = $"INVALID INTEGER [ {Parts[n]} ]";
+                    errorMessage = Response.Error(ErrorCode.InvalidInteger);
                     return false;
                 }
 

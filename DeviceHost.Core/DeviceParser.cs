@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inventors.ECP.Profiling;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,7 +37,7 @@ namespace DeviceHost.Core
                 }
                 catch (Exception ex)
                 {
-                    response.AppendLine($"ERR:{ex.Message}");
+                    response.AppendLine(ex.Message);
                 }
             }
 
@@ -46,20 +47,16 @@ namespace DeviceHost.Core
 
         public string ParseCommand(string content)
         {
-            if (Command.Create(content, ApiKey, out Command command, out string errorMessage))
+            if (!Command.Create(content, ApiKey, out Command command, out string errorMessage))
+                return errorMessage;
+
+            if (_server.GetHandler(command) is IDeviceHandler handler)
             {
-                if (_server.GetHandler(command) is IDeviceHandler handler)
-                {
-                    return handler.Execute(command);
-                }
-                else
-                {
-                    return "ERR:NO HANDLER FOUND";
-                }
+                return handler.Execute(command);
             }
             else
             {
-                return errorMessage;
+                return Response.Error(ErrorCode.NoHandlerFound);
             }
         }
 
