@@ -2,7 +2,7 @@ import socket
 import logging
 import time
 
-def send_and_receive(message: str, timeout: int = 10) -> str:
+def execute(message: str, timeout: int = 10) -> str:
     """
     Sends a text string to a socket on port 9797 and returns the response.
     
@@ -73,43 +73,43 @@ def LoadScript(filename):
     except IOError:
         return f"Error: Could not read the file '{filename}'."
 
-def RunScript(scriptName):
+def run(scriptName):
     print(f"RUNNING SCRIPT: {scriptName}")
-    response = send_and_receive(LoadScript(scriptName))
+    response = execute(LoadScript(scriptName))
     print("RESPONSE FROM SERVER:")
     print(response)
 
 
-def RunStimulation():
+def stimulate():
     try:
-        RunScript("Create.txt")
-        RunScript("Open.txt")
+        run("Create.txt")
+        run("Open.txt")
         
 
-        RunScript("Ping.txt")
-        RunScript("Waveform.txt")
-        RunScript("Start.txt")
+        run("Ping.txt")
+        run("Waveform.txt")
+        run("Start.txt")
 
         print("WAITING FOR 5S")
         time.sleep(5)
-        RunScript("Rating.txt")
-        RunScript("State.txt")
-        RunScript("Signals.txt")
+        run("Rating.txt")
+        run("State.txt")
+        run("Signals.txt")
 
-        RunScript("Stop.txt")
-        RunScript("Close.txt")
-        RunScript("Delete.txt")
+        run("Stop.txt")
+        run("Close.txt")
+        run("Delete.txt")
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def TestRating():
+def getRating():
     try:
-        RunScript("Create.txt")
-        RunScript("Rating.txt")
-        RunScript("Delete.txt")
+        run("Create.txt")
+        run("Rating.txt")
+        run("Delete.txt")
     except Exception as e:
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    RunStimulation()
+    stimulate()
 
