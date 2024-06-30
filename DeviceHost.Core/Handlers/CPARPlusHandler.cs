@@ -85,7 +85,7 @@ namespace DeviceHost.Core.Handlers
             "STOP" => Stop(),
             "WAVEFORM" => Waveform(command),
             "SIGNALS" => Signals(),
-            "RESPONSE" => GetResponse(),
+            "RATING" => Rating(),
             _ => Response.Error(ErrorCode.UnknownCommand)
         };
 
@@ -114,7 +114,7 @@ namespace DeviceHost.Core.Handlers
         private static int RatingToInteger(double vas) =>
             (int)(vas * 10);
 
-        public string GetResponse()
+        public string Rating()
         {
             lock (lockObject)
             {

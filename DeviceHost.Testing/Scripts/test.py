@@ -78,7 +78,7 @@ def RunScript(scriptName):
     print(response)
 
 
-def main():
+def RunStimulation():
     try:
         RunScript("Create.txt")
         RunScript("Open.txt")
@@ -87,6 +87,7 @@ def main():
         RunScript("Ping.txt")
         RunScript("Waveform.txt")
         RunScript("Start.txt")
+        RunScript("Response.txt")
 
         print("WAITING FOR 5S")
         time.sleep(5)
@@ -99,6 +100,14 @@ def main():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def TestRating():
+    try:
+        RunScript("Create.txt")
+        RunScript("Rating.txt")
+        RunScript("Delete.txt")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 if __name__ == "__main__":
-    main()
+    TestRating()
 
