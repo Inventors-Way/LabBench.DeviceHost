@@ -339,12 +339,30 @@ END;
 If successfull it will return the state of the device in the form of:
 
 ```
-
+State [STATE];
+VasConnected [0 or 1];
+VasIsLow [0 or 1];
+PowerOn [0 or 1];
+StartPossible [0 or 1];
+Condition [0 or 1];
+FinalPressure01 [PRESSURE]
+FinalPressure02 [PRESSURE]
+SupplyPressureLow [0 or 1]
+SupplyPressure [PRESSURE]
 ```
+
+**Values**:
+ 
+* ```[STATE]```: State of the device. Possible values STATE_NOT_CONNECTED, STATE_IDLE, STATE_STATE_STIMULATING, STATE_EMERGENCY, STATE_PENDING. STATE_NOT_CONNECTED: COM port is not open. STATE_IDLE: No active pressure stimulation. STATE_EMERGENCY: Emergency button is active and pressure is vented to ambient air. STATE_PENDING: The device is active but waiting for an external trigger to start pressure stimulation.
+* ```FinalPresureXX```: The final pressure for outlet XX when the pressure stimulation was completed either by fullfilment of the STOPCRITERION or when the pressure WAVEFORM programs completed. This is useful for determination of Pain Detection and Tolerance Thresholds.
+* ```[PRESSURE]```: Pressure in kPa multiplied by 10.
+
 
 or an error in the form of ```ERR;[ERRORCODE]```.
 
 #### SIGNALS
+
+Returns pressures and ratings since last execution of the SIGNALS command:
 
 ```
 START 1234;
@@ -353,7 +371,17 @@ CMD SIGNALS;
 END;
 ```
 
+If successfull it will return the state of the device in the form of:
+
+```
+
+```
+
+or an error in the form of ```ERR;[ERRORCODE]```.
+
 #### RATING
+
+Will return the current ratings:
 
 ```
 START 1234;
@@ -362,6 +390,13 @@ CMD RATING;
 END;
 ```
 
+If successfull it will return the state of the device in the form of:
+
+```
+
+```
+
+or an error in the form of ```ERR;[ERRORCODE]```.
 
 ## Error Codes
 
