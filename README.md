@@ -159,7 +159,7 @@ CMD PORTS;
 END;
 ```
 
-This command will return a semicollon seperated list of COM ports in the form of
+**Response:** This command will return a semicollon seperated list of COM ports in the form of:
 
 ```
 COM1;COM2
@@ -178,6 +178,8 @@ DEVICE [DEVICETYPE];
 END;
 ```
 
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
 Parameters:
 ```[PORT]```: Name of the COM port. Valid values can be obtained with the SYSTEM + PORT command
 ```[DEVICETYPE]```: Possible values CPARPLUS
@@ -190,9 +192,11 @@ Delete a device handler on a given ```[PORT]``` port:
 START 1234;
 USE SERVER;
 CMD DELETE;
-PORT [PORT]];
+PORT [PORT];
 END;
 ```
+
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
 ## Devices 
 
@@ -209,6 +213,8 @@ CMD OPEN;
 END;
 ```
 
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
 #### CLOSE
 
 ```
@@ -218,6 +224,8 @@ CMD CLOSE;
 END;
 ```
 
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
 #### PING
 
 ```
@@ -226,6 +234,8 @@ USE PORT [PORT] CPARPLUS;
 CMD PING;
 END;
 ```
+
+**Response::** **Response:** ```OK;[DEVICETYPE]``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
 #### WAVEFORM
 
@@ -241,6 +251,8 @@ STEP 0 1000;
 END;
 ```
 
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
 #### START
 
 ```
@@ -255,6 +267,8 @@ OUTLET02 1;
 END;
 ```
 
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
 #### STOP
 
 ```
@@ -263,6 +277,8 @@ USE PORT [PORT] CPARPLUS;
 CMD STOP;
 END;
 ```
+
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
 #### STATE
 
