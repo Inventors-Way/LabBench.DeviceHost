@@ -312,6 +312,8 @@ END;
 
 #### STOP
 
+Stops any active pressure stimulation:
+
 ```
 START 1234;
 USE PORT [PORT] CPARPLUS;
@@ -321,7 +323,11 @@ END;
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
+Please note, if the intention is to stop a stimulation, no harm will come from executing this command even if a pressure stimulation is not active.
+
 #### STATE
+
+Return the state of the device:
 
 ```
 START 1234;
@@ -329,6 +335,14 @@ USE PORT [PORT] CPARPLUS;
 CMD STATE;
 END;
 ```
+
+If successfull it will return the state of the device in the form of:
+
+```
+
+```
+
+or an error in the form of ```ERR;[ERRORCODE]```.
 
 #### SIGNALS
 
