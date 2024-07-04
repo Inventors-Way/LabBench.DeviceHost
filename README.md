@@ -271,6 +271,20 @@ END;
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
+#### CLEAR
+
+Will clear all waveform programs:
+
+```
+START 1234;
+USE PORT [PORT] CPARPLUS;
+CMD CLEAR;
+END;
+```
+
+**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
+
 #### START
 
 Will start a pressure stimulation with the currently set pressure WAVEFORM programs:
@@ -289,9 +303,9 @@ END;
 
 **Parameters**:
 
-* ```[STOPCRITERION]```:
-* ```[EXTERNALTRIGGER]```:
-* ```[OVERRIDERATING]```:
+* ```[STOPCRITERION]```: 0: STOP_CRITERION_ON_BUTTON_VAS the pressure stimulation will stop when VAS 10 is scored or a button is pressed, 1: STOP_CRITERION_ON_BUTTON_PRESSED the pressure stimulation will stop when a button is pressed, 2: STOP_CRITERION_ON_BUTTON_RELEASED the pressure stimulation will stop when a button is released. In all cases the stimulation will automatically stop when all pressure WAVEFORM programs have completed.
+* ```[EXTERNALTRIGGER]```: If set to 0 the stimulation will start immediately, if set to 1 the stimulation will start when a trigger is received on the TRIG IN connection on the device.
+* ```[OVERRIDERATING]```: If set to 0 the stimulation will not start if VAS != 0, if set to 1 the stimulation will start regardless of the current VAS rating. 
 * ```[WAVEFORM]```: Which WAVEFORM program is routed to the pressure outlet. 0: None, 1: Channel 1, 2: Channel 2.
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
