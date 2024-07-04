@@ -204,7 +204,7 @@ END;
 
 #### OPEN
 
-
+Open the COM port to allow commands to be send to a device:
 
 ```
 START 1234;
@@ -217,6 +217,8 @@ END;
 
 #### CLOSE
 
+Close the COM port:
+
 ```
 START 1234;
 USE PORT [PORT] CPARPLUS;
@@ -228,6 +230,8 @@ END;
 
 #### PING
 
+Will ping a device and check that it has the correct type as expected by the created handler:
+
 ```
 START 1234;
 USE PORT [PORT] CPARPLUS;
@@ -235,37 +239,60 @@ CMD PING;
 END;
 ```
 
+Please, note if the port is not openend it will result in an error.
+
 **Response::** **Response:** ```OK;[DEVICETYPE]``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
 #### WAVEFORM
+
+The CPARPLUS device can have up to two waveform channels that each can be routed to one or both of the two pressure outlets of the device. These programs consists of a series of instructions STEP, INC, and DEC that changes the current output pressure. To prevent errors such as infinite loops there are no brancing instructions. However, it is possible to repeat a program set number of times.
 
 ```
 START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD WAVEFORM;
-CHANNEL 0;
-REPEAT 2;
-INSTRUCTIONS 2;
-STEP 500 1000;
-STEP 0 1000;
+CHANNEL [CHANNEL];
+REPEAT [REPEAT];
+INSTRUCTIONS [INSTRUCTIONS];
+STEP [PRESSURE] [DURATION];
+INC [DELTAPRESSURE] [DURATION];
+DEC [DELTAPRESSURE] [DURATION];
 END;
 ```
+
+**Parameters**:
+
+* ```[CHANNEL]```: Channel for which to set the program (valid values: 0 for Channel 1 or 1: for Channel 2)
+* ```[REPEAT]```: Number of times to repeat the program
+* ```[INSTRUCTIONS]```: Number of subsequent instructions, must be equal to the number of instructions after the INSTRUCTIONS statement.
+* ```[PRESSURE]```: Pressure to set for the STEP command, is the pressure in kPa multiplied by 10. E.g. 500 is equal to 50kPa.
+* ```[DURATION]```: Duration of the instruction in ms.
+* ```[DELTAPRESSURE]```: Change in pressure per second multiplied by 10 for the INC and DEC instructions. Must be a positive value. The change in pressure is relative to the current pressure CURRENTPRESSURE, and the final pressure will be ```[DELTAPRESSURE]*[DURATION] + CURRENTPRESSURE``` for the INC instruction and ```-[DELTAPRESSURE]*[DURATION] + CURRENTPRESSURE``` for the DEC instruction.
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
 #### START
 
+Will start a pressure stimulation with the currently set pressure WAVEFORM programs:
+
 ```
 START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD START;
-STOPCRITERION 0;
-EXTERNALTRIGGER 0;
-OVERRIDERATING 1;
-OUTLET01 1;
-OUTLET02 1;
+STOPCRITERION [STOPCRITERION];
+EXTERNALTRIGGER [EXTERNALTRIGGER];
+OVERRIDERATING [OVERRIDERATING];
+OUTLET01 [WAVEFORM];
+OUTLET02 [WAVEFORM];
 END;
 ```
+
+**Parameters**:
+
+* ```[STOPCRITERION]```:
+* ```[EXTERNALTRIGGER]```:
+* ```[OVERRIDERATING]```:
+* ```[WAVEFORM]```: Which WAVEFORM program is routed to the pressure outlet. 0: None, 1: Channel 1, 2: Channel 2.
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
