@@ -374,8 +374,15 @@ END;
 If successfull it will return the state of the device in the form of:
 
 ```
-
+Pressure01;Pressure02;Rating;
+{Pressure, Pressure, Rating}
 ```
+
+Please note, if no pressures are available there will be no values after the header.
+
+**Values**:
+* ```{Pressure}```: Pressure in kPa multiplied by 10.
+* ```{Rating}```: VAS rating in mm.
 
 or an error in the form of ```ERR;[ERRORCODE]```.
 
