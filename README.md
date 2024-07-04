@@ -78,6 +78,8 @@ END;
 
 This format consists of a list of statements each terminated by a semicoloon ```;```. The ```[]``` notation means a part that is mandatory and must be specified for all commands, and the ```{}``` specifies a part that is only mandatory for certain types of systems or commands.
 
+**Please note, that currently the socket must be closed and reopened between each command sent to the DeviceHost. This is due to a [bug](https://github.com/Inventors-Way/LabBench.DeviceHost/issues/1) that will be fixed.**
+
 #### START Statement
 
 All commands must start with a START Statement of the form:
@@ -111,10 +113,14 @@ The ```DEVICE``` parameter specifies which device the host should expect to find
 
 #### CMD Statement
 
+The command statement tells the DeviceHost which command to execute by the system that was selected in the USE statement.
+
 ```
 CMD [COMMAND];
 {COMMAND STATEMENTS}
 ```
+
+For the set of possible commands, please see the description of the SYSTEM and CPARPLUS systems.
 
 #### END Statement
 
@@ -124,35 +130,67 @@ All commands must end with an END statement in the following format:
 END;
 ```
 
+### Connecting to the device host
+
+To connect to the DeviceHost, open an http socket with UTF8 encoding to address and port configured when the DeviceHost was started. If no parameters are specified this will be ```127.0.0.1:9797```.
+
+### Procedure for accessing a device.
+
+To use a LabBench Device:
+
+1. Create a handler for device on its COM port (USE SYSTEM + CMD CREATE).
+2. Open the COM port (USE CPARPLUS + CMD OPEN).
+3. Start sending commands (USE CPARPLUS + selected commands)
+4. Close the COM port (USE CPARPLUS + CMD CLOSE)
+5. Delete the handler (USE SYSTEM + CMD DELETE)
+
+If the DeviceHost is closed from the command line, then step 4 + 5 is optional, and will be executed automatically when the program is closed. To close the program from the command line, press CTRL + C.
+
 ## Server Commands
 
 #### PORTS
 
+List the COM ports:
+
 ```
-START 1234;
+START [API-KEY]; 
 USE SERVER;
 CMD PORTS;
 END;
 ```
 
+This command will return a semicollon seperated list of COM ports in the form of
+
+```
+COM1;COM2
+```
+
 #### CREATE
+
+Create a device handler on a given ```[PORT]``` port and ```[DEVICETYPE]``` device type:
 
 ```
 START 1234;
 USE SERVER;
 CMD CREATE;
-PORT COM8; 
-DEVICE CPARPLUS;
+PORT [PORT]; 
+DEVICE [DEVICETYPE];
 END;
 ```
 
+Parameters:
+```[PORT]```: Name of the COM port. Valid values can be obtained with the SYSTEM + PORT command
+```[DEVICETYPE]```: Possible values CPARPLUS
+
 #### DELETE
+
+Delete a device handler on a given ```[PORT]``` port:
 
 ```
 START 1234;
 USE SERVER;
 CMD DELETE;
-PORT COM8;
+PORT [PORT]];
 END;
 ```
 
@@ -162,9 +200,11 @@ END;
 
 #### OPEN
 
+
+
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD OPEN;
 END;
 ```
@@ -173,7 +213,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD CLOSE;
 END;
 ```
@@ -182,7 +222,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD PING;
 END;
 ```
@@ -191,7 +231,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD WAVEFORM;
 CHANNEL 0;
 REPEAT 2;
@@ -205,7 +245,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD START;
 STOPCRITERION 0;
 EXTERNALTRIGGER 0;
@@ -219,7 +259,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD STOP;
 END;
 ```
@@ -228,7 +268,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD STATE;
 END;
 ```
@@ -237,7 +277,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD SIGNALS;
 END;
 ```
@@ -246,7 +286,7 @@ END;
 
 ```
 START 1234;
-USE PORT COM8 CPARPLUS;
+USE PORT [PORT] CPARPLUS;
 CMD RATING;
 END;
 ```
