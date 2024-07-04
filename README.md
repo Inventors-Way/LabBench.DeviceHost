@@ -345,10 +345,10 @@ VasIsLow [0 or 1];
 PowerOn [0 or 1];
 StartPossible [0 or 1];
 Condition [0 or 1];
-FinalPressure01 [PRESSURE]
-FinalPressure02 [PRESSURE]
-SupplyPressureLow [0 or 1]
-SupplyPressure [PRESSURE]
+FinalPressure01 [PRESSURE];
+FinalPressure02 [PRESSURE];
+SupplyPressureLow [0 or 1];
+SupplyPressure [PRESSURE];
 ```
 
 **Values**:
@@ -375,7 +375,7 @@ If successfull it will return the state of the device in the form of:
 
 ```
 Pressure01;Pressure02;Rating;
-{Pressure, Pressure, Rating}
+{Pressure, Pressure, Rating;}
 ```
 
 Please note, if no pressures are available there will be no values after the header.
@@ -400,8 +400,18 @@ END;
 If successfull it will return the state of the device in the form of:
 
 ```
-
+VasScore [0 to 100];
+FinalVasScore [0 to 100];
+Button [0 or 1];
+LatchedButton [0 or 1];
 ```
+
+**Values:**
+
+* VasScore: The curreent VAS scopre in mm.
+* FinalVasScore: The VAS score when either the STOPCRITERION was fullfilled or at the comperion of the pressure WAVEFORM programs.
+* Button: Current state of the button. 0: No button pressed, 1: One or more button pressed.
+* LatchedButton: Has a button been pressed since the last execution of the RATING command.
 
 or an error in the form of ```ERR;[ERRORCODE]```.
 
