@@ -1,6 +1,7 @@
 import socket
 import logging
 import time
+import serial as s
 
 def execute(message: str, timeout: int = 10) -> str:
     """
@@ -82,23 +83,32 @@ def run(scriptName):
 
 def stimulate():
     try:
-        run("Create.txt")
-        run("Open.txt")
-        
+        answer = ""
 
-        run("Ping.txt")
-        run("Waveform.txt")
-        run("Start.txt")
+        while answer != "e":
+            run("Create.txt")
+            run("Open.txt")
+            
 
-        print("WAITING FOR 5S")
-        time.sleep(5)
-        run("Rating.txt")
-        run("State.txt")
-        run("Signals.txt")
+            run("Ping.txt")
+            run("Waveform.txt")
+            # SEND TRIGGER
+            input("Press any key to stimulate")
+            run("Start.txt")
 
-        run("Stop.txt")
-        run("Close.txt")
-        run("Delete.txt")
+            print("WAITING")
+            time.sleep(1)
+            run("Rating.txt")
+            run("State.txt")
+            run("Signals.txt")
+
+            run("Stop.txt")
+            run("Close.txt")
+            run("Delete.txt")
+
+            answer = input("Press e to exit: ")
+
+
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -113,5 +123,5 @@ def getRating():
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    getRating()
+    stimulate()
 
