@@ -63,9 +63,7 @@ namespace devhost
                         Address = IPAddress.Parse(options.Address),
                         Port = options.Port
                     };
-                    CancellationTokenSource tokenSource = new();
-                    
-                    server.Start(tokenSource.Token);
+                    var tokenSource = server.Start();
 
                     while (true)
                     {

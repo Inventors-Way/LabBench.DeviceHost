@@ -20,8 +20,11 @@ namespace DeviceHost.Core
 
         public bool Running { get; private set; } = false;
 
-        public void Start(CancellationToken cancellationToken)
+        public CancellationTokenSource Start()
         {
+            CancellationTokenSource cts = new();
+            CancellationToken cancellationToken = cts.Token;
+
             Task.Run(async () =>
             {
                 Running = true;
@@ -58,6 +61,8 @@ namespace DeviceHost.Core
                 Log.Information("Device server closed");
                 Running = false;
             }, CancellationToken.None);
+
+            return cts;
         }
 
         async Task HandleClient(Socket handler, CancellationToken cancellationToken)

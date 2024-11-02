@@ -1,3 +1,4 @@
+using DeviceHost.Core;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -36,24 +37,19 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void T01_GetPorts() => TestScript("Ports.txt");
+        public async Task T01_BasicTest()
+        {
+            var server = new DeviceServer();
+            var cts = server.Start();
 
-        [TestMethod]
-        public void T02_Open() => TestScript("Open.txt");
-
-        [TestMethod]
-        public void T03_Waveform() => TestScript("Waveform.txt");
-
-        [TestMethod]
-        public void T04_Start() 
-        { 
+            TestScript("Ports.txt");
+            TestScript("Open.txt");
+            TestScript("Waveform.txt");
             TestScript("Start.txt");
-            //await Task.Delay(5000);
+            TestScript("Close.txt");
 
+            cts.Cancel();
+            await server.Join();
         }
-
-        [TestMethod]
-        public void T05_Close() => TestScript("Close.txt");
-
     }
 }

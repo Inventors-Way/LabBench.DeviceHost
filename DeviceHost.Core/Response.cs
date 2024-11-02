@@ -71,7 +71,11 @@ namespace DeviceHost.Core
             return this;
         }
 
-        public string Create() => builder.ToString();
+        public string Create()
+        {
+            builder.AppendLine("END;");
+            return builder.ToString();
+        }
 
         public static string Error(ErrorCode code) => new Response()
             .Add("ERR", code)
