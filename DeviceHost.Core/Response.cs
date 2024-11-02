@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,27 +40,45 @@ namespace DeviceHost.Core
 
     public class Response
     {
-        public static string Error(ErrorCode code)
+        private readonly StringBuilder builder = new();
+
+        public Response() 
         {
-            var builder = new StringBuilder();
             builder.AppendLine("START;");
-            builder.AppendLine($"ERR {code};");
-            builder.AppendLine("END;");
-            return builder.ToString();
         }
 
-        public static string OK()
+        public Response Add(string name)
         {
-            var builder = new StringBuilder();
-            builder.AppendLine("START;");
-            builder.AppendLine("OK;");
-            builder.AppendLine("END;");
-            return builder.ToString();
+            builder.AppendLine($"{name};");
+            return this;
         }
 
-        internal static string Error(object deviceClosed)
+        public Response Add(string name, string content)
         {
-            throw new NotImplementedException();
+            builder.AppendLine($"{name} {content};");
+            return this;
         }
+
+        public Response Add(string name, object content)
+        {
+            builder.AppendLine($"{name} {content};");
+            return this;
+        }
+
+        public Response Add(string name, IEnumerable<object> values)
+        {
+            builder.AppendLine($"{name} {string.Join(",", values)};");
+            return this;
+        }
+
+        public string Create() => builder.ToString();
+
+        public static string Error(ErrorCode code) => new Response()
+            .Add("ERR", code)
+            .Create();
+
+        public static string OK() => new Response()
+            .Add("OK")
+            .Create();
     }
 }
