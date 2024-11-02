@@ -8,7 +8,7 @@ namespace DeviceHost.Core
 {
     public enum ErrorCode
     {
-        NoHandlerFound,
+        NoHandlerFound = 0,
         InvalidCommandFormat,
         InvalidStartOfCommand,
         MissingUseStatement,
@@ -39,9 +39,23 @@ namespace DeviceHost.Core
 
     public class Response
     {
-        public static string Error(ErrorCode code) => $"ERR;{code};";
+        public static string Error(ErrorCode code)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("START;");
+            builder.AppendLine($"ERR {code};");
+            builder.AppendLine("END;");
+            return builder.ToString();
+        }
 
-        public static string OK() => "OK;";
+        public static string OK()
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("START;");
+            builder.AppendLine("OK;");
+            builder.AppendLine("END;");
+            return builder.ToString();
+        }
 
         internal static string Error(object deviceClosed)
         {

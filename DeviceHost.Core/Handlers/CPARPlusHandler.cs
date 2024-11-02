@@ -138,7 +138,7 @@ namespace DeviceHost.Core.Handlers
             {
                 var builder = new StringBuilder();
 
-                builder.AppendLine("Pressure01;Pressure02;Rating;");
+                builder.AppendLine("START;");
 
                 while (statusQueue.Count > 0)
                 {
@@ -148,6 +148,8 @@ namespace DeviceHost.Core.Handlers
                     builder.Append($"{PressureToInteger(item.ActualPressure02)};");
                     builder.AppendLine($"{RatingToInteger(item.VasScore)};");
                 }
+
+                builder.AppendLine("END;");
 
                 return builder.ToString();
             }
@@ -180,6 +182,7 @@ namespace DeviceHost.Core.Handlers
 
                 StringBuilder sb = new StringBuilder();
 
+                sb.AppendLine("START;");
                 sb.AppendLine($"State {status.SystemState};");
                 sb.AppendLine($"VasConnected {(status.VasConnected ? 1 : 0)};");
                 sb.AppendLine($"VasIsLow {(status.VasIsLow ? 1 : 0)};");
@@ -190,6 +193,7 @@ namespace DeviceHost.Core.Handlers
                 sb.AppendLine($"FinalPressure02 {((int)(status.FinalPressure02 * 10))};");
                 sb.AppendLine($"SupplyPressureLow {(status.SupplyPressureLow ? 1 : 0)};");
                 sb.AppendLine($"SupplyPressure {((int) status.SupplyPressure)};");
+                sb.AppendLine("END;");
 
                 return sb.ToString();
             }
