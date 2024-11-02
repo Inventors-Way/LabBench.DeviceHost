@@ -42,9 +42,9 @@ namespace DeviceHost.Core
     {
         private readonly StringBuilder builder = new();
 
-        public Response() 
+        public Response()
         {
-            builder.AppendLine("START;");
+            builder.AppendLine($"START;");
         }
 
         public Response Add(string name)
