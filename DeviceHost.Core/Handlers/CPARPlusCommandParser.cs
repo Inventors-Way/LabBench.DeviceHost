@@ -129,7 +129,7 @@ namespace DeviceHost.Core.Handlers
 
             if (command.Content.Length != 5)
             {
-                error = error = Response.Error(ErrorCode.InvalidStartCommandContent);
+                error = Response.Error(ErrorCode.InvalidStartCommandContent);
 
                 return false;
             }
