@@ -55,6 +55,7 @@ namespace devhost
                     ConfigureLogging(options);
 
                     Log.Information("Starting server (api-key: {apiKey}, address: {adress}, port: {port})", options.ApiKey, options.Address, options.Port);
+                    Log.Information("Close program by pressing Ctrl + E");
 
                     using var server = new DeviceServer()
                     {
@@ -62,8 +63,25 @@ namespace devhost
                         Address = IPAddress.Parse(options.Address),
                         Port = options.Port
                     };
+                    CancellationTokenSource tokenSource = new();
+                    
+                    server.Start(tokenSource.Token);
 
-                    await server.Run();
+                    while (true)
+                    {
+                        if (Console.KeyAvailable)
+                        {
+                            var key = Console.ReadKey(false);
+
+                            if ((key.Key == ConsoleKey.E) && (key.Modifiers == ConsoleModifiers.Control))
+                            {
+                                tokenSource.Cancel();
+                                break;
+                            }
+                        }
+                    }
+
+                    await server.Join();
                 }
             }
             catch (Exception ex)
