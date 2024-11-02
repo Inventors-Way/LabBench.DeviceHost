@@ -7,7 +7,7 @@ namespace DeviceHost.Testing
     [TestClass]
     public class IntegrationTesting
     {
-        private bool Enabled { get; } = false;
+        private bool Enabled { get; } = true;
 
         private void TestScript(string script)
         {
@@ -42,10 +42,18 @@ namespace DeviceHost.Testing
         public void T02_Open() => TestScript("Open.txt");
 
         [TestMethod]
-        public void T03_Ping() => TestScript("Ping.txt");
+        public void T03_Waveform() => TestScript("Waveform.txt");
 
         [TestMethod]
-        public void T04_Close() => TestScript("Close.txt");
+        public void T04_Start() 
+        { 
+            TestScript("Start.txt");
+            //await Task.Delay(5000);
+
+        }
+
+        [TestMethod]
+        public void T05_Close() => TestScript("Close.txt");
 
     }
 }

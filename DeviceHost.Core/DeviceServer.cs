@@ -40,7 +40,7 @@ namespace DeviceHost.Core
                     Log.Information("Client connected (remote endpoint: {endpoint}).", handler.RemoteEndPoint);
 
                     // Process the client connection
-                    _ = Task.Run(() => HandleClient(handler));
+                    await HandleClient(handler);
                 }
             }
             catch (Exception ex)
