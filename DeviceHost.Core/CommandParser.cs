@@ -58,7 +58,7 @@ namespace DeviceHost.Core
                             yield return ParseResult.Fail(Response.Error(ErrorCode.ParketFrammingError));
                         }
 
-                        current.AppendLine(line);
+                        current.AppendLine($"{line.Trim()};");
                         break;
                 }
             }

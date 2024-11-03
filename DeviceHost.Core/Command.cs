@@ -30,7 +30,7 @@ namespace DeviceHost.Core
         private Command(string content)
         {
             _lines = (from line in content.Split(';')
-                      where !string.IsNullOrEmpty(line)
+                      where !string.IsNullOrEmpty(line.Trim())
                       select line.Trim()).ToArray();
         }
 

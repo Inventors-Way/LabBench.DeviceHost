@@ -43,12 +43,12 @@ namespace DeviceHost.Core
     {
         private readonly StringBuilder builder = new();
 
-        public static string STX => "START;";
-        public static string ETX => "END;";
+        public static string STX => "START";
+        public static string ETX => "END";
 
         public Response()
         {
-            builder.AppendLine(STX);
+            builder.AppendLine($"{STX};");
         }
 
         public Response Add(string name)
@@ -77,7 +77,7 @@ namespace DeviceHost.Core
 
         public string Create()
         {
-            builder.AppendLine(ETX);
+            builder.AppendLine($"{ETX};");
             return builder.ToString();
         }
 

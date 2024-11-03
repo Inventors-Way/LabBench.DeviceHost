@@ -16,8 +16,17 @@ namespace DeviceHost.Testing
         {
             string script = TestUtility.GetPacket("Ports.txt");
             var parser = new CommandParser();
-            var result = parser.Parse(script);
+            var results = parser.Parse(script).ToList();
 
+            Assert.AreEqual(1, results.Count);
+            var r = results[0];
+
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            var cmd = r.Command;
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual("PORTS", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
         }
 
         [TestMethod]
@@ -25,7 +34,17 @@ namespace DeviceHost.Testing
         {
             string script = TestUtility.GetPacket("Open.txt");
             var parser = new CommandParser();
-            var result = parser.Parse(script);
+            var results = parser.Parse(script).ToList();
+
+            Assert.AreEqual(1, results.Count);
+            var r = results[0];
+
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            var cmd = r.Command;
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual("OPEN", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
         }
     }
 }
