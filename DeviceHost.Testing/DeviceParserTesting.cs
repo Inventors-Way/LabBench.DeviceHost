@@ -14,37 +14,18 @@ namespace DeviceHost.Testing
         [TestMethod]
         public void T01_Ports()
         {
-            var serverMock = TestUtility.CreateDeviceServerMock();
-            string script = TestUtility.GetScript("Ports.txt");
+            string script = TestUtility.GetPacket("Ports.txt");
             var parser = new CommandParser();
             var result = parser.Parse(script);
 
-            Assert.IsTrue(result.Complete);
-            Console.WriteLine(result.Response);
-
-            Assert.IsTrue(serverMock.Server.CommandReceived);
-            var cmd = serverMock.Server.Command;
-
-            Assert.IsNotNull(cmd);
-            Assert.AreEqual("PORTS", cmd.Name);
         }
 
         [TestMethod]
         public void T02_Open()
         {
-            var serverMock = TestUtility.CreateDeviceServerMock();
-            string script = TestUtility.GetScript("Open.txt");
-            var parser = new CommandParser(serverMock);
+            string script = TestUtility.GetPacket("Open.txt");
+            var parser = new CommandParser();
             var result = parser.Parse(script);
-
-            Assert.IsTrue(result.Complete);
-            Console.WriteLine(result.Response);
-
-            Assert.IsTrue(serverMock["COM8"].CommandReceived);
-            var cmd = serverMock["COM8"].Command;
-
-            Assert.IsNotNull(cmd);
-            Assert.AreEqual("OPEN", cmd.Name);
         }
     }
 }

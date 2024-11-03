@@ -42,19 +42,13 @@ namespace DeviceHost.Core
                 return false;
             }
 
-            if (!_lines[^1].Contains("END"))
-            {
-                errorMessage = Response.Error(ErrorCode.InvalidEndOfCommand);
-                return false;
-            }
-
-            if (!_lines[1].StartsWith("USE"))
+            if (!_lines[0].StartsWith("USE"))
             {
                 errorMessage = Response.Error(ErrorCode.MissingUseStatement);
                 return false;
             }
 
-            var useDirective = new UseDirective(_lines[1]);
+            var useDirective = new UseDirective(_lines[0]);
 
             if (!useDirective.Parse(out errorMessage))
                 return false;
@@ -63,7 +57,7 @@ namespace DeviceHost.Core
             Device = useDirective.Device;
             Port = useDirective.Port;
 
-            var cmdDirective = new StringParameter(_lines[2]);
+            var cmdDirective = new StringParameter(_lines[1]);
 
             if (!cmdDirective.Parse(out errorMessage))
                 return false;
@@ -76,8 +70,8 @@ namespace DeviceHost.Core
 
             Name = cmdDirective[0];
 
-            if (_lines.Length > 4)
-                Content = _lines[3..^1];
+            if (_lines.Length > 2)
+                Content = _lines[2..^0];
 
             errorMessage = string.Empty;
             return true;
