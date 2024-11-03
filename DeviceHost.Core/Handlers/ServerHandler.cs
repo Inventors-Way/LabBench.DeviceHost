@@ -27,9 +27,7 @@ namespace DeviceHost.Core.Handlers
         public void Cleanup()
         {
             foreach (var item in _handlers)
-            {
                 item.Value.Cleanup();
-            }
         }
 
         public string Execute(Command command) =>
