@@ -64,13 +64,19 @@ namespace DeviceHost.Core.Handlers
             var device = new StringParameter(command.Content[1], 1);
 
             if (!port.Parse(out string portError))
-                return portError;
+            {
+                Log.Error(portError);
+                return Response.Error(ErrorCode.InvalidParameterSpecification);
+            }
 
             if (port.Name != "PORT")
                 return Response.Error(ErrorCode.NoPortStatement);
 
             if (!device.Parse(out string deviceError))
-                return deviceError;
+            {
+                Log.Error(deviceError);
+                return Response.Error(ErrorCode.InvalidParameterSpecification);
+            }
 
             if (device.Name != "DEVICE")
                 return Response.Error(ErrorCode.NoDeviceStatement);
@@ -80,7 +86,7 @@ namespace DeviceHost.Core.Handlers
                 case "CPARPLUS":
                     if (_handlers.ContainsKey(port[0]))
                     {
-                        Log.Error("Error: attempting to create handler on an allready bound port");
+                        Log.Error("attempting to create handler on an allready bound port");
                         return Response.Error(ErrorCode.HandlerExists);
                     }
 
@@ -103,7 +109,10 @@ namespace DeviceHost.Core.Handlers
             var port = new StringParameter(command.Content[0], 1);
 
             if (!port.Parse(out string portError))
-                return portError;
+            {
+                Log.Error(portError);
+                return Response.Error(ErrorCode.InvalidParameterSpecification);
+            }
 
             if (port.Name != "PORT")
                 return Response.Error(ErrorCode.NoPortStatement);
