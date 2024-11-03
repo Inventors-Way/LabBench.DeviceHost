@@ -121,14 +121,14 @@ namespace DeviceHost.Core.Handlers
                 if (status is null)
                     return Response.Error(ErrorCode.NoStatus);
 
-                var sb = new StringBuilder();
-                sb.AppendLine($"VasScore {((int)(status.VasScore * 10))};");
-                sb.AppendLine($"FinalVasScore {((int)(status.FinalVasScore * 10))};");
-                sb.AppendLine($"Button {(status.StopPressed ? 1 : 0)};");
-                sb.Append($"LatchedButton {(latchedButton ? 1 : 0)};");
+                var response = new Response();
+                response.Add("Score", RatingToInteger(status.VasScore));
+                response.Add("FinalScore", RatingToInteger(status.FinalVasScore));
+                response.Add("Button", status.StopPressed);
+                response.Add("LatchedButton", latchedButton);
                 latchedButton = false;
 
-                return sb.ToString();  
+                return response.Create();  
             }
         }
 
@@ -136,22 +136,20 @@ namespace DeviceHost.Core.Handlers
         {
             lock (lockObject)
             {
-                var builder = new StringBuilder();
-
-                builder.AppendLine("START;");
+                var response = new Response();
 
                 while (statusQueue.Count > 0)
                 {
                     var item = statusQueue.Dequeue();
-
-                    builder.Append($"{PressureToInteger(item.ActualPressure01)};");
-                    builder.Append($"{PressureToInteger(item.ActualPressure02)};");
-                    builder.AppendLine($"{RatingToInteger(item.VasScore)};");
+                    response.Add("DATA", new string[]
+                    {
+                        $"{PressureToInteger(item.ActualPressure01)}",
+                        $"{PressureToInteger(item.ActualPressure02)}",
+                        $"{RatingToInteger(item.VasScore)}"
+                    });
                 }
 
-                builder.AppendLine("END;");
-
-                return builder.ToString();
+                return response.Create();
             }
         }
 
@@ -180,22 +178,19 @@ namespace DeviceHost.Core.Handlers
                 if (status is null)
                     return Response.Error(ErrorCode.NoStatus);
 
-                StringBuilder sb = new StringBuilder();
+                var response = new Response()
+                    .Add("STATE", status.SystemState)
+                    .Add("RESPONSE_CONNECTED", status.VasConnected)
+                    .Add("RESPONSE_OK", status.VasConnected && status.VasIsLow)
+                    .Add("POWER", status.PowerOn)
+                    .Add("START_POSSIBLE", status.StartPossible)
+                    .Add("CONDITION", status.Condition)
+                    .Add("FINAL_PRESSURE01", PressureToInteger(status.FinalPressure01))
+                    .Add("FINAL_PRESSURE02", PressureToInteger(status.FinalPressure02))
+                    .Add("SUPPLY_PRESSURE_OK", !status.SupplyPressureLow)
+                    .Add("SUPPLY_PRESSURE", PressureToInteger(status.SupplyPressure));
 
-                sb.AppendLine("START;");
-                sb.AppendLine($"State {status.SystemState};");
-                sb.AppendLine($"VasConnected {(status.VasConnected ? 1 : 0)};");
-                sb.AppendLine($"VasIsLow {(status.VasIsLow ? 1 : 0)};");
-                sb.AppendLine($"PowerOn {(status.PowerOn ? 1 : 0)};");
-                sb.AppendLine($"StartPossible {(status.StartPossible ? 1 : 0)};");
-                sb.AppendLine($"Condition {status.Condition};");
-                sb.AppendLine($"FinalPressure01 {((int)(status.FinalPressure01 * 10))};");
-                sb.AppendLine($"FinalPressure02 {((int)(status.FinalPressure02 * 10))};");
-                sb.AppendLine($"SupplyPressureLow {(status.SupplyPressureLow ? 1 : 0)};");
-                sb.AppendLine($"SupplyPressure {((int) status.SupplyPressure)};");
-                sb.AppendLine("END;");
-
-                return sb.ToString();
+                return response.Create();
             }
         }
 

@@ -45,11 +45,12 @@ namespace DeviceHost.Testing
             TestScript("Open.txt", "COM8");
             TestScript("Waveform.txt", "COM8");
             TestScript("State.txt", "COM8");
+            TestScript("Signals.txt", "COM8");
             TestScript("Start.txt", "COM8");
             await Task.Delay(50);
             TestScript("State.txt", "COM8");
 
-            await Task.Delay(500);
+            await Task.Delay(1000);
             TestScript("Signals.txt", "COM8");
             TestScript("State.txt", "COM8");
 

@@ -61,6 +61,13 @@ namespace DeviceHost.Core
             return this;
         }
 
+        public Response Add(string name, bool content)
+        {
+            builder.AppendLine($"{name} {(content ? 1 : 0)};");
+            return this;
+        }
+
+
         public Response Add(string name, object content)
         {
             builder.AppendLine($"{name} {content};");
