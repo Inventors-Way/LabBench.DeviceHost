@@ -16,8 +16,6 @@ namespace DeviceHost.Core
 
         public IPAddress Address { get; set; } = IPAddress.Parse("127.0.0.1");
 
-        public string ApiKey { get; set; } = "1234";
-
         public bool Running { get; private set; } = false;
 
         public CancellationTokenSource Start()
@@ -68,7 +66,7 @@ namespace DeviceHost.Core
         async Task HandleClient(Socket handler, CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[65535];
-            var parser = new DeviceParser(this) { ApiKey = ApiKey };
+            var parser = new DeviceParser(this);
 
             try
             {

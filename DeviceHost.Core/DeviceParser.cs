@@ -13,8 +13,6 @@ namespace DeviceHost.Core
         public DeviceParser(IDeviceServer server) =>
             _server = server;
 
-        public string ApiKey { get; set; } = "1234";
-
         public ParseResult Parse(string input)
         {
             builder.Append(input);
@@ -47,7 +45,7 @@ namespace DeviceHost.Core
 
         public string ParseCommand(string content)
         {
-            if (!Command.Create(content, ApiKey, out Command command, out string errorMessage))
+            if (!Command.Create(content, out Command command, out string errorMessage))
                 return errorMessage;
 
             if (_server.GetHandler(command) is IDeviceHandler handler)

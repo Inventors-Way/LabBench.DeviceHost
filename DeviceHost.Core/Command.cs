@@ -11,10 +11,10 @@ namespace DeviceHost.Core
 {
     public class Command
     {
-        public static bool Create(string content, string apiKey, out Command command, out string errorMessage)
+        public static bool Create(string content, out Command command, out string errorMessage)
         {
             command = new Command(content);
-            return command.Parse(apiKey, out errorMessage);
+            return command.Parse(out errorMessage);
         }
 
         public SystemID System { get; private set; } = SystemID.SERVER;
@@ -34,7 +34,7 @@ namespace DeviceHost.Core
                       select line.Trim()).ToArray();
         }
 
-        private bool Parse(string apiKey, out string errorMessage)
+        private bool Parse(out string errorMessage)
         {
             if (_lines.Length < 4) 
             {
@@ -54,7 +54,7 @@ namespace DeviceHost.Core
                 return false;
             }
 
-            if (!VerifyKey(apiKey, out errorMessage))
+            if (!VerifyCommand(out errorMessage))
                 return false;
 
             if (!_lines[1].StartsWith("USE"))
@@ -92,28 +92,11 @@ namespace DeviceHost.Core
             return true;
         }
 
-        public bool VerifyKey(string apiKey, out string errorMessage)
+        public bool VerifyCommand(out string errorMessage)
         {
             if (!startRegex.IsMatch(_lines[0]))
             {
                 errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
-                return false;
-            }
-
-            var parts = _lines[0].Split(' ');
-
-            if (parts.Length != 2)
-            {
-                errorMessage = Response.Error(ErrorCode.NoApiKey);
-                Log.Error("MISSING API KEY");
-                return false;
-            }
-
-            if (!(parts[1].Trim() == apiKey))
-            {
-                errorMessage = Response.OK();
-                Log.Error("INVALID API KEY, REPORTED AS OK DUE TO SECURITY CONCERNS [ Actual: {actual}, Expected: {expected} ]",
-                    parts[1].Trim(), apiKey);
                 return false;
             }
 
@@ -122,6 +105,6 @@ namespace DeviceHost.Core
         }
 
         private readonly string[] _lines;
-        private readonly Regex startRegex = new(@"START\s[\w]+", RegexOptions.Compiled);
+        private readonly Regex startRegex = new(@"START", RegexOptions.Compiled);
     }
 }
