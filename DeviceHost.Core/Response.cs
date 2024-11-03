@@ -46,10 +46,8 @@ namespace DeviceHost.Core
         public static string STX => "START";
         public static string ETX => "END";
 
-        public Response()
-        {
+        public Response() =>
             builder.AppendLine($"{STX};");
-        }
 
         public Response Add(string name)
         {

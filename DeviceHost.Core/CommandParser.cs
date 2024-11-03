@@ -21,8 +21,9 @@ namespace DeviceHost.Core
         private StringBuilder current = new();
         private State state = State.WaitingForSTX;
 
-        public static string[] GetLines(string input) =>
-            input.Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.RemoveEmptyEntries);
+        public static IEnumerable<string> GetLines(string input) =>
+            from s in input.Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.RemoveEmptyEntries)
+            select s.Trim();
         
         public IEnumerable<ParseResult> Parse(string input)
         {
@@ -43,11 +44,11 @@ namespace DeviceHost.Core
                             var commandContent = current.ToString();
 
                             if (!Command.Create(commandContent, out Command command, out string error))
-                            {
                                 yield return ParseResult.Fail(error);
-                                break;
-                            }
-                            yield return ParseResult.Success(command);
+                            else
+                                yield return ParseResult.Success(command);
+
+                            state = State.WaitingForSTX;
 
                             break;
                         }

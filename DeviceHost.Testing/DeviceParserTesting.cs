@@ -52,11 +52,31 @@ namespace DeviceHost.Testing
         {
             string script = String.Format(TestUtility.GetPackets(new string[]
                 {
-                "Open.txt",
-                "Ports.txt"
+                "Ports.txt",
+                "Open.txt"
                 }), "COM3");
-            
 
+            var parser = new CommandParser();
+            var results = parser.Parse(script).ToList();
+
+            Assert.AreEqual(2, results.Count);
+            var r = results[0];
+
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            var cmd = r.Command;
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual("PORTS", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
+
+            r = results[1];
+
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            cmd = r.Command;
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual("OPEN", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
         }
     }
 }
