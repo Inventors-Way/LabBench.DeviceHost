@@ -23,12 +23,10 @@ namespace DeviceHost.Testing
                 string packet = String.Format(TestUtility.GetPacket(script), port);
                 Console.WriteLine("Sent:");
                 Console.WriteLine(packet);
-                Console.WriteLine();
 
                 string response = TestUtility.Send(packet);
                 Console.WriteLine("Received:");
                 Console.WriteLine(response);
-                Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -43,9 +41,18 @@ namespace DeviceHost.Testing
             var cts = server.Start();
 
             TestScript("Ports.txt", "COM8");
+            TestScript("Create.txt", "COM8");
             TestScript("Open.txt", "COM8");
             TestScript("Waveform.txt", "COM8");
+            TestScript("State.txt", "COM8");
             TestScript("Start.txt", "COM8");
+            await Task.Delay(50);
+            TestScript("State.txt", "COM8");
+
+            await Task.Delay(500);
+            TestScript("Signals.txt", "COM8");
+            TestScript("State.txt", "COM8");
+
             TestScript("Close.txt", "COM8");
 
             cts.Cancel();
