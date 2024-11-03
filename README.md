@@ -90,8 +90,6 @@ CMD [COMMAND];
 
 This format consists of a list of statements each terminated by a semicoloon ```;```. The ```[]``` notation means a part that is mandatory and must be specified for all commands, and the ```{}``` specifies a part that is only mandatory for certain types of systems or commands.
 
-**Please note, that currently the socket must be closed and reopened between each command sent to the DeviceHost. This is due to a [bug](https://github.com/Inventors-Way/LabBench.DeviceHost/issues/1) that will be fixed.**
-
 #### USE Statement
 
 Following the START Statement all commands must be followed by a USE statement in the following format:
