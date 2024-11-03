@@ -35,17 +35,20 @@ namespace DeviceHost.Core
         NoPortStatement,
         NoDeviceStatement,
         HandlerExists,
-        UnknownDevice
+        UnknownDevice,
+        ParketFrammingError,
+        InvalidModeCommandContent
     }
 
     public class Response
     {
         private readonly StringBuilder builder = new();
 
-        public Response() 
-        {
-            builder.AppendLine("START;");
-        }
+        public static string STX => "START";
+        public static string ETX => "END";
+
+        public Response() =>
+            builder.AppendLine($"{STX};");
 
         public Response Add(string name)
         {
@@ -59,6 +62,13 @@ namespace DeviceHost.Core
             return this;
         }
 
+        public Response Add(string name, bool content)
+        {
+            builder.AppendLine($"{name} {(content ? 1 : 0)};");
+            return this;
+        }
+
+
         public Response Add(string name, object content)
         {
             builder.AppendLine($"{name} {content};");
@@ -67,11 +77,15 @@ namespace DeviceHost.Core
 
         public Response Add(string name, IEnumerable<object> values)
         {
-            builder.AppendLine($"{name} {string.Join(",", values)};");
+            builder.AppendLine($"{name} {string.Join(" ", values)};");
             return this;
         }
 
-        public string Create() => builder.ToString();
+        public string Create()
+        {
+            builder.AppendLine($"{ETX};");
+            return builder.ToString();
+        }
 
         public static string Error(ErrorCode code) => new Response()
             .Add("ERR", code)

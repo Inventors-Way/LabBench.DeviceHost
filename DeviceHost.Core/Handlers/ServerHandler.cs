@@ -27,9 +27,7 @@ namespace DeviceHost.Core.Handlers
         public void Cleanup()
         {
             foreach (var item in _handlers)
-            {
                 item.Value.Cleanup();
-            }
         }
 
         public string Execute(Command command) =>
@@ -43,7 +41,14 @@ namespace DeviceHost.Core.Handlers
 
         public static string GetPorts()
         {
-            return string.Join(";", SerialPort.GetPortNames());
+            var response = new Response();
+
+            foreach (var port in SerialPort.GetPortNames())
+            {
+                response.Add("PORT", port);
+            }
+
+            return response.Create();
         }
 
         public string Create(Command command)
@@ -57,13 +62,19 @@ namespace DeviceHost.Core.Handlers
             var device = new StringParameter(command.Content[1], 1);
 
             if (!port.Parse(out string portError))
-                return portError;
+            {
+                Log.Error(portError);
+                return Response.Error(ErrorCode.InvalidParameterSpecification);
+            }
 
             if (port.Name != "PORT")
                 return Response.Error(ErrorCode.NoPortStatement);
 
             if (!device.Parse(out string deviceError))
-                return deviceError;
+            {
+                Log.Error(deviceError);
+                return Response.Error(ErrorCode.InvalidParameterSpecification);
+            }
 
             if (device.Name != "DEVICE")
                 return Response.Error(ErrorCode.NoDeviceStatement);
@@ -73,7 +84,7 @@ namespace DeviceHost.Core.Handlers
                 case "CPARPLUS":
                     if (_handlers.ContainsKey(port[0]))
                     {
-                        Log.Error("Error: attempting to create handler on an allready bound port");
+                        Log.Error("attempting to create handler on an allready bound port");
                         return Response.Error(ErrorCode.HandlerExists);
                     }
 
@@ -96,7 +107,10 @@ namespace DeviceHost.Core.Handlers
             var port = new StringParameter(command.Content[0], 1);
 
             if (!port.Parse(out string portError))
-                return portError;
+            {
+                Log.Error(portError);
+                return Response.Error(ErrorCode.InvalidParameterSpecification);
+            }
 
             if (port.Name != "PORT")
                 return Response.Error(ErrorCode.NoPortStatement);

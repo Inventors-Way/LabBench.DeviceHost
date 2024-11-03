@@ -16,71 +16,98 @@ namespace DeviceHost.Core
 
         public IPAddress Address { get; set; } = IPAddress.Parse("127.0.0.1");
 
-        public string ApiKey { get; set; } = "1234";
+        public bool Running { get; private set; } = false;
 
-        public async Task Run()
+        public CancellationTokenSource Start()
         {
-            IPEndPoint localEndPoint = new(Address, Port);
+            CancellationTokenSource cts = new();
+            CancellationToken cancellationToken = cts.Token;
 
-            // Create a TCP socket
-            using Socket listener = new(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            try
+            Task.Run(async () =>
             {
-                // Bind the socket to the local endpoint and listen for incoming connections
-                listener.Bind(localEndPoint);
-                listener.Listen(10);
+                Running = true;
+                IPEndPoint localEndPoint = new(Address, Port);
 
-                Log.Information("Device server listening on {localEndPoint}", localEndPoint);
+                // Create a TCP socket
+                using Socket listener = new(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-                while (true)
+                try
                 {
-                    // Wait for a connection
-                    Socket handler = await listener.AcceptAsync();
-                    Log.Information("Client connected (remote endpoint: {endpoint}).", handler.RemoteEndPoint);
+                    // Bind the socket to the local endpoint and listen for incoming connections
+                    listener.Bind(localEndPoint);
+                    listener.Listen(10);
+                    listener.ReceiveTimeout = 100;
 
-                    // Process the client connection
-                    await HandleClient(handler);
+                    Log.Information("Device server listening on {localEndPoint}", localEndPoint);
+
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        Socket handler = await listener.AcceptAsync(cancellationToken);
+                        Log.Information("Client connected (remote endpoint: {endpoint}).", handler.RemoteEndPoint);
+                        await HandleClient(handler, cancellationToken);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Exception: {exception}", ex);
-            }
+                catch (OperationCanceledException)
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Exception: {exception}", ex);
+                }
+
+                Log.Information("Device server closed");
+                Running = false;
+            }, CancellationToken.None);
+
+            return cts;
         }
 
-        async Task HandleClient(Socket handler)
+        async Task HandleClient(Socket handler, CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[65535];
-            var parser = new DeviceParser(this)
-            {
-                ApiKey = ApiKey
-            };
+            var parser = new CommandParser();
 
             try
             {
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    int bytesReceived = await handler.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
+                    int bytesReceived = await handler.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cancellationToken);
 
                     if (bytesReceived == 0)
                         break;
 
                     string data = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
-                    
-                    var response = parser.Parse(data);
+                    StringBuilder response = new();
 
-                    if (response.Complete)
+                    foreach (var result in parser.Parse(data))
                     {
-                        byte[] responseBytes = Encoding.UTF8.GetBytes(response.Response);
-                        await handler.SendAsync(new ArraySegment<byte>(responseBytes), SocketFlags.None);
+                        if (result.IsSuccess)
+                        {
+                            if (result.Command is null)
+                                continue;
+
+                            if (GetHandler(result.Command) is not IDeviceHandler deviceHandler)
+                            {
+                                response.Append(Response.Error(ErrorCode.NoHandlerFound));
+                                continue;
+                            }
+
+                            response.Append(deviceHandler.Execute(result.Command));
+                        }
+                        else
+                        {
+                            response.Append(result.Error);
+                        }
                     }
+
+                    byte[] responseBytes = Encoding.UTF8.GetBytes(response.ToString());
+                    await handler.SendAsync(new ArraySegment<byte>(responseBytes), SocketFlags.None);
                 }
+            }
+            catch (OperationCanceledException)
+            {
 
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
-
-                Log.Information("Client disconnected.");
             }
             catch (Exception ex)
             {
@@ -92,9 +119,17 @@ namespace DeviceHost.Core
             }
         }
 
+        public async Task Join() =>
+            await Task.Run(async () =>
+            {
+                while (Running)
+                    await Task.Delay(10);
+            });
+
         #region IDeviceServer
 
-        public IDeviceHandler? GetHandler(Command command) => _handler.GetHandler(command);
+        public IDeviceHandler? GetHandler(Command command) =>
+            _handler.GetHandler(command);
 
         public void Cleanup() => _handler.Cleanup();
 

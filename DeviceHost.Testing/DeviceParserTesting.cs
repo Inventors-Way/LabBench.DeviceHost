@@ -12,39 +12,71 @@ namespace DeviceHost.Testing
     {
 
         [TestMethod]
-        public void T01_Ports()
+        public void Ports()
         {
-            var serverMock = TestUtility.CreateDeviceServerMock();
-            string script = TestUtility.GetScript("Ports.txt");
-            var parser = new DeviceParser(serverMock);
-            var result = parser.Parse(script);
+            string script = TestUtility.GetPacket("Ports.txt", "COM8");
+            var parser = new CommandParser();
+            var results = parser.Parse(script).ToList();
 
-            Assert.IsTrue(result.Complete);
-            Console.WriteLine(result.Response);
+            Assert.AreEqual(1, results.Count);
+            var r = results[0];
 
-            Assert.IsTrue(serverMock.Server.CommandReceived);
-            var cmd = serverMock.Server.Command;
-
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            var cmd = r.Command;
             Assert.IsNotNull(cmd);
             Assert.AreEqual("PORTS", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
         }
 
         [TestMethod]
-        public void T02_Open()
+        public void Open()
         {
-            var serverMock = TestUtility.CreateDeviceServerMock();
-            string script = TestUtility.GetScript("Open.txt");
-            var parser = new DeviceParser(serverMock);
-            var result = parser.Parse(script);
+            string script = TestUtility.GetPacket("Open.txt", "COM8");
+            var parser = new CommandParser();
+            var results = parser.Parse(script).ToList();
 
-            Assert.IsTrue(result.Complete);
-            Console.WriteLine(result.Response);
+            Assert.AreEqual(1, results.Count);
+            var r = results[0];
 
-            Assert.IsTrue(serverMock["COM8"].CommandReceived);
-            var cmd = serverMock["COM8"].Command;
-
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            var cmd = r.Command;
             Assert.IsNotNull(cmd);
             Assert.AreEqual("OPEN", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
+        }
+
+        [TestMethod]
+        public void CombinedCommands()
+        {
+            string script = TestUtility.GetPackets(new string[]
+                {
+                "Ports.txt",
+                "Open.txt"
+                }, "COM3");
+
+            var parser = new CommandParser();
+            var results = parser.Parse(script).ToList();
+
+            Assert.AreEqual(2, results.Count);
+            var r = results[0];
+
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            var cmd = r.Command;
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual("PORTS", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
+
+            r = results[1];
+
+            Assert.IsNotNull(r);
+            Assert.IsTrue(r.IsSuccess);
+            cmd = r.Command;
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual("OPEN", cmd.Name);
+            Assert.AreEqual(0, cmd.Content.Length);
         }
     }
 }

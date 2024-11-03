@@ -11,10 +11,10 @@ namespace DeviceHost.Core
 {
     public class Command
     {
-        public static bool Create(string content, string apiKey, out Command command, out string errorMessage)
+        public static bool Create(string content, out Command command, out string errorMessage)
         {
             command = new Command(content);
-            return command.Parse(apiKey, out errorMessage);
+            return command.Parse(out errorMessage);
         }
 
         public SystemID System { get; private set; } = SystemID.SERVER;
@@ -30,40 +30,25 @@ namespace DeviceHost.Core
         private Command(string content)
         {
             _lines = (from line in content.Split(';')
-                      where !string.IsNullOrEmpty(line)
+                      where !string.IsNullOrEmpty(line.Trim())
                       select line.Trim()).ToArray();
         }
 
-        private bool Parse(string apiKey, out string errorMessage)
+        private bool Parse(out string errorMessage)
         {
-            if (_lines.Length < 4) 
+            if (_lines.Length < 2) 
             {
                 errorMessage = Response.Error(ErrorCode.InvalidCommandFormat);
                 return false;
             }
 
-            if (!startRegex.IsMatch(_lines[0])) 
-            {
-                errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
-                return false;
-            }
-
-            if (!_lines[^1].Contains("END"))
-            {
-                errorMessage = Response.Error(ErrorCode.InvalidEndOfCommand);
-                return false;
-            }
-
-            if (!VerifyKey(apiKey, out errorMessage))
-                return false;
-
-            if (!_lines[1].StartsWith("USE"))
+            if (!_lines[0].StartsWith("USE"))
             {
                 errorMessage = Response.Error(ErrorCode.MissingUseStatement);
                 return false;
             }
 
-            var useDirective = new UseDirective(_lines[1]);
+            var useDirective = new UseDirective(_lines[0]);
 
             if (!useDirective.Parse(out errorMessage))
                 return false;
@@ -72,7 +57,7 @@ namespace DeviceHost.Core
             Device = useDirective.Device;
             Port = useDirective.Port;
 
-            var cmdDirective = new StringParameter(_lines[2]);
+            var cmdDirective = new StringParameter(_lines[1]);
 
             if (!cmdDirective.Parse(out errorMessage))
                 return false;
@@ -85,43 +70,13 @@ namespace DeviceHost.Core
 
             Name = cmdDirective[0];
 
-            if (_lines.Length > 4)
-                Content = _lines[3..^1];
-
-            errorMessage = string.Empty;
-            return true;
-        }
-
-        public bool VerifyKey(string apiKey, out string errorMessage)
-        {
-            if (!startRegex.IsMatch(_lines[0]))
-            {
-                errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
-                return false;
-            }
-
-            var parts = _lines[0].Split(' ');
-
-            if (parts.Length != 2)
-            {
-                errorMessage = Response.Error(ErrorCode.NoApiKey);
-                Log.Error("MISSING API KEY");
-                return false;
-            }
-
-            if (!(parts[1].Trim() == apiKey))
-            {
-                errorMessage = Response.OK();
-                Log.Error("INVALID API KEY, REPORTED AS OK DUE TO SECURITY CONCERNS [ Actual: {actual}, Expected: {expected} ]",
-                    parts[1].Trim(), apiKey);
-                return false;
-            }
+            if (_lines.Length > 2)
+                Content = _lines[2..^0];
 
             errorMessage = string.Empty;
             return true;
         }
 
         private readonly string[] _lines;
-        private readonly Regex startRegex = new(@"START\s[\w]+", RegexOptions.Compiled);
     }
 }

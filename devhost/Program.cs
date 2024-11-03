@@ -9,9 +9,6 @@ namespace devhost
     {
         public class Options
         {
-            [Option('k', "api-key", Required = false, HelpText = "The API Key for the device host (default: 1234)")]
-            public string ApiKey { get; set; } = "1234";
-
             [Option('a', "address", Required = false, HelpText = "The address on which to host the device host (default: 127.0.0.1")]
             public string Address { get; set; } = "127.0.0.1";
 
@@ -53,17 +50,31 @@ namespace devhost
                 if (result.Value is Options options)
                 {
                     ConfigureLogging(options);
-
-                    Log.Information("Starting server (api-key: {apiKey}, address: {adress}, port: {port})", options.ApiKey, options.Address, options.Port);
+                    Log.Information("Close program by pressing Ctrl + E");
+                    Log.Information("Starting server (address: {adress}, port: {port})", options.Address, options.Port);
 
                     using var server = new DeviceServer()
                     {
-                        ApiKey = options.ApiKey,
                         Address = IPAddress.Parse(options.Address),
                         Port = options.Port
                     };
+                    var tokenSource = server.Start();
 
-                    await server.Run();
+                    while (true)
+                    {
+                        if (Console.KeyAvailable)
+                        {
+                            var key = Console.ReadKey(false);
+
+                            if ((key.Key == ConsoleKey.E) && (key.Modifiers == ConsoleModifiers.Control))
+                            {
+                                tokenSource.Cancel();
+                                break;
+                            }
+                        }
+                    }
+
+                    await server.Join();
                 }
             }
             catch (Exception ex)

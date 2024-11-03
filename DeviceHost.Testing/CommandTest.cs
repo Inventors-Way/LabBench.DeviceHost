@@ -11,37 +11,27 @@ namespace DeviceHost.Testing
     public class CommandTest
     {
         [TestMethod]
-        public void T01_GetPorts()
+        public void GetPorts()
         {
             var script = TestUtility.GetScript("Ports.txt");
-            Assert.IsTrue(Command.Create(script, "1234", out Command command, out string _));
+            Assert.IsTrue(Command.Create(script, out Command command, out string _));
 
-            Assert.IsTrue(command.VerifyKey("1234", out string _));
             Assert.AreEqual(SystemID.SERVER, command.System);
             Assert.AreEqual(string.Empty, command.Port);
             Assert.AreEqual("PORTS", command.Name);
         }
 
         [TestMethod]
-        public void T02_GetPortsInvalidKey()
+        public void Create()
         {
-            var script = TestUtility.GetScript("Ports.txt");
-            Assert.IsFalse(Command.Create(script, "2234", out Command command, out string msg));
-            Console.WriteLine(msg);
-        }
+            var script = String.Format(TestUtility.GetScript("Create.txt"), "COM3");
+            Assert.IsTrue(Command.Create(script, out Command command, out string _));
 
-        [TestMethod]
-        public void T03_Create()
-        {
-            var script = TestUtility.GetScript("Create.txt");
-            Assert.IsTrue(Command.Create(script, "1234", out Command command, out string _));
-
-            Assert.IsTrue(command.VerifyKey("1234", out string _));
             Assert.AreEqual(SystemID.SERVER, command.System);
             Assert.AreEqual(string.Empty, command.Port);
             Assert.AreEqual("CREATE", command.Name);
             Assert.AreEqual(2, command.Content.Length);
-            Assert.AreEqual("PORT COM8", command.Content[0]);
+            Assert.AreEqual("PORT COM3", command.Content[0]);
             Assert.AreEqual("DEVICE CPARPLUS", command.Content[1]);
         }
 

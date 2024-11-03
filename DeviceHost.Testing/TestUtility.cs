@@ -39,6 +39,29 @@ namespace DeviceHost.Testing
             return File.ReadAllText(scriptFilePath);
         }
 
+        public static string GetPacket(string name, string port)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine($"{Response.STX};");
+            builder.Append(String.Format(GetScript(name), port));
+            builder.AppendLine($"{Response.ETX};");
+            return builder.ToString();
+        }
+
+        public static string GetPackets(IEnumerable<string> names, string port)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var name in names)
+            {
+                builder.AppendLine($"{Response.STX};");
+                builder.Append(String.Format(GetScript(name), port));
+                builder.AppendLine($"{Response.ETX};");
+            }
+
+            return builder.ToString();
+        }
+
         public static string Send(string command)
         {
             using TcpClient client = new(serverIp, serverPort);

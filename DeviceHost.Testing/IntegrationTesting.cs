@@ -1,3 +1,4 @@
+using DeviceHost.Core;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -9,7 +10,7 @@ namespace DeviceHost.Testing
     {
         private bool Enabled { get; } = true;
 
-        private void TestScript(string script)
+        private void TestScript(string packet)
         {
             if (!Enabled)
             {
@@ -19,15 +20,12 @@ namespace DeviceHost.Testing
 
             try
             {
-                string messageToSend = TestUtility.GetScript(script);
                 Console.WriteLine("Sent:");
-                Console.WriteLine(messageToSend);
-                Console.WriteLine();
+                Console.WriteLine(packet);
 
-                string response = TestUtility.Send(messageToSend);
+                string response = TestUtility.Send(packet);
                 Console.WriteLine("Received:");
                 Console.WriteLine(response);
-                Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -36,24 +34,49 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void T01_GetPorts() => TestScript("Ports.txt");
+        public async Task T01_BasicTest()
+        {
+            var server = new DeviceServer();
+            var cts = server.Start();
 
-        [TestMethod]
-        public void T02_Open() => TestScript("Open.txt");
+            TestScript(TestUtility.GetPacket("Ports.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Create.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Open.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Ping.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Mode.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Waveform.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("State.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Signals.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Start.txt", "COM8"));
+            await Task.Delay(50);
+            TestScript(TestUtility.GetPacket("State.txt", "COM8"));
 
-        [TestMethod]
-        public void T03_Waveform() => TestScript("Waveform.txt");
+            await Task.Delay(1000);
+            TestScript(TestUtility.GetPacket("Signals.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("State.txt", "COM8"));
 
-        [TestMethod]
-        public void T04_Start() 
-        { 
-            TestScript("Start.txt");
-            //await Task.Delay(5000);
+            TestScript(TestUtility.GetPacket("Close.txt", "COM8"));
 
+            cts.Cancel();
+            await server.Join();
         }
 
         [TestMethod]
-        public void T05_Close() => TestScript("Close.txt");
+        public async Task T02_CombinedTest()
+        {
+            var server = new DeviceServer();
+            var cts = server.Start();
 
+            TestScript(TestUtility.GetPackets(new string[]
+                {
+                    "Ports.txt",
+                    "Create.txt",
+                    "Open.txt",
+                    "Close.txt"
+                }, "COM8"));
+
+            cts.Cancel();
+            await server.Join();
+        }
     }
 }
