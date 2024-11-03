@@ -43,7 +43,14 @@ namespace DeviceHost.Core.Handlers
 
         public static string GetPorts()
         {
-            return string.Join(";", SerialPort.GetPortNames());
+            var response = new Response();
+
+            foreach (var port in SerialPort.GetPortNames())
+            {
+                response.Add("PORT", port);
+            }
+
+            return response.Create();
         }
 
         public string Create(Command command)
