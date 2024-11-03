@@ -183,7 +183,7 @@ CMD DELETE;
 PORT [PORT];
 ```
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 ## Devices 
 
@@ -198,7 +198,7 @@ USE PORT [PORT] CPARPLUS;
 CMD OPEN;
 ```
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 #### CLOSE
 
@@ -209,7 +209,7 @@ USE PORT [PORT] CPARPLUS;
 CMD CLOSE;
 ```
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 #### MODE
 
@@ -223,7 +223,7 @@ RESPONSE {Enabled}
 
 Where {Enabled} determines whether the VAS meter is enabled or not.
 
-**Response::** **Response:** ```OK;[DEVICETYPE]``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 #### PING
 
@@ -236,7 +236,14 @@ CMD PING;
 
 Please, note if the port is not openend it will result in an error.
 
-**Response::** **Response:** ```OK;[DEVICETYPE]``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** if successfull:
+
+```
+DEVICE [Device Type];
+VERSION [Firmware Version];
+```
+
+otherwise, in case of errors ```ERR [ERRORCODE]```.
 
 #### WAVEFORM
 
@@ -262,7 +269,7 @@ DEC [DELTAPRESSURE] [DURATION];
 * ```[DURATION]```: Duration of the instruction in ms.
 * ```[DELTAPRESSURE]```: Change in pressure per second multiplied by 10 for the INC and DEC instructions. Must be a positive value. The change in pressure is relative to the current pressure CURRENTPRESSURE, and the final pressure will be ```[DELTAPRESSURE]*[DURATION] + CURRENTPRESSURE``` for the INC instruction and ```-[DELTAPRESSURE]*[DURATION] + CURRENTPRESSURE``` for the DEC instruction.
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 #### CLEAR
 
@@ -273,7 +280,7 @@ USE PORT [PORT] CPARPLUS;
 CMD CLEAR;
 ```
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 
 #### START
@@ -297,7 +304,7 @@ OUTLET02 [WAVEFORM];
 * ```[OVERRIDERATING]```: If set to 0 the stimulation will not start if VAS != 0, if set to 1 the stimulation will start regardless of the current VAS rating. 
 * ```[WAVEFORM]```: Which WAVEFORM program is routed to the pressure outlet. 0: None, 1: Channel 1, 2: Channel 2.
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 #### STOP
 
@@ -308,7 +315,7 @@ USE PORT [PORT] CPARPLUS;
 CMD STOP;
 ```
 
-**Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+**Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
 Please note, if the intention is to stop a stimulation, no harm will come from executing this command even if a pressure stimulation is not active.
 
@@ -343,7 +350,7 @@ SUPPLY_PRESSURE [PRESSURE];
 * ```[PRESSURE]```: Pressure in kPa multiplied by 10.
 
 
-or an error in the form of ```ERR;[ERRORCODE]```.
+or an error in the form of ```ERR [ERRORCODE]```.
 
 #### SIGNALS
 
@@ -368,7 +375,7 @@ Please note, if no pressures are available there the Device Host will return an 
 * ```{Pressure}```: Pressure in kPa multiplied by 10.
 * ```{Rating}```: VAS rating in mm.
 
-or an error in the form of ```ERR;[ERRORCODE]```.
+or an error in the form of ```ERR [ERRORCODE]```.
 
 #### RATING
 
@@ -395,7 +402,7 @@ LATCHED_BUTTON [0 or 1];
 * BUTTON: Current state of the button. 0: No button pressed, 1: One or more button pressed.
 * LATCHED_BUTTON: Has a button been pressed since the last execution of the RATING command.
 
-or an error in the form of ```ERR;[ERRORCODE]```.
+or an error in the form of ```ERR [ERRORCODE]```.
 
 ## Error Codes
 
