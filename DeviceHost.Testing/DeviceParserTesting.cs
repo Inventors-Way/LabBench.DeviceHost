@@ -14,7 +14,7 @@ namespace DeviceHost.Testing
         [TestMethod]
         public void Ports()
         {
-            string script = TestUtility.GetPacket("Ports.txt");
+            string script = TestUtility.GetPacket("Ports.txt", "COM8");
             var parser = new CommandParser();
             var results = parser.Parse(script).ToList();
 
@@ -32,7 +32,7 @@ namespace DeviceHost.Testing
         [TestMethod]
         public void Open()
         {
-            string script = TestUtility.GetPacket("Open.txt");
+            string script = TestUtility.GetPacket("Open.txt", "COM8");
             var parser = new CommandParser();
             var results = parser.Parse(script).ToList();
 
@@ -50,11 +50,11 @@ namespace DeviceHost.Testing
         [TestMethod]
         public void CombinedCommands()
         {
-            string script = String.Format(TestUtility.GetPackets(new string[]
+            string script = TestUtility.GetPackets(new string[]
                 {
                 "Ports.txt",
                 "Open.txt"
-                }), "COM3");
+                }, "COM3");
 
             var parser = new CommandParser();
             var results = parser.Parse(script).ToList();

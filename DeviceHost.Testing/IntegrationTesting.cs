@@ -10,7 +10,7 @@ namespace DeviceHost.Testing
     {
         private bool Enabled { get; } = true;
 
-        private void TestScript(string script, string port)
+        private void TestScript(string packet)
         {
             if (!Enabled)
             {
@@ -20,7 +20,6 @@ namespace DeviceHost.Testing
 
             try
             {
-                string packet = String.Format(TestUtility.GetPacket(script), port);
                 Console.WriteLine("Sent:");
                 Console.WriteLine(packet);
 
@@ -40,21 +39,39 @@ namespace DeviceHost.Testing
             var server = new DeviceServer();
             var cts = server.Start();
 
-            TestScript("Ports.txt", "COM8");
-            TestScript("Create.txt", "COM8");
-            TestScript("Open.txt", "COM8");
-            TestScript("Waveform.txt", "COM8");
-            TestScript("State.txt", "COM8");
-            TestScript("Signals.txt", "COM8");
-            TestScript("Start.txt", "COM8");
+            TestScript(TestUtility.GetPacket("Ports.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Create.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Open.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Waveform.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("State.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Signals.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Start.txt", "COM8"));
             await Task.Delay(50);
-            TestScript("State.txt", "COM8");
+            TestScript(TestUtility.GetPacket("State.txt", "COM8"));
 
             await Task.Delay(1000);
-            TestScript("Signals.txt", "COM8");
-            TestScript("State.txt", "COM8");
+            TestScript(TestUtility.GetPacket("Signals.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("State.txt", "COM8"));
 
-            TestScript("Close.txt", "COM8");
+            TestScript(TestUtility.GetPacket("Close.txt", "COM8"));
+
+            cts.Cancel();
+            await server.Join();
+        }
+
+        [TestMethod]
+        public async Task T02_CombinedTest()
+        {
+            var server = new DeviceServer();
+            var cts = server.Start();
+
+            TestScript(TestUtility.GetPackets(new string[]
+                {
+                    "Ports.txt",
+                    "Create.txt",
+                    "Open.txt",
+                    "Close.txt"
+                }, "COM8"));
 
             cts.Cancel();
             await server.Join();
