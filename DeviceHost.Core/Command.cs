@@ -36,15 +36,9 @@ namespace DeviceHost.Core
 
         private bool Parse(out string errorMessage)
         {
-            if (_lines.Length < 4) 
+            if (_lines.Length < 2) 
             {
                 errorMessage = Response.Error(ErrorCode.InvalidCommandFormat);
-                return false;
-            }
-
-            if (!startRegex.IsMatch(_lines[0])) 
-            {
-                errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
                 return false;
             }
 
@@ -53,9 +47,6 @@ namespace DeviceHost.Core
                 errorMessage = Response.Error(ErrorCode.InvalidEndOfCommand);
                 return false;
             }
-
-            if (!VerifyCommand(out errorMessage))
-                return false;
 
             if (!_lines[1].StartsWith("USE"))
             {
@@ -92,19 +83,6 @@ namespace DeviceHost.Core
             return true;
         }
 
-        public bool VerifyCommand(out string errorMessage)
-        {
-            if (!startRegex.IsMatch(_lines[0]))
-            {
-                errorMessage = Response.Error(ErrorCode.InvalidStartOfCommand);
-                return false;
-            }
-
-            errorMessage = string.Empty;
-            return true;
-        }
-
         private readonly string[] _lines;
-        private readonly Regex startRegex = new(@"START", RegexOptions.Compiled);
     }
 }

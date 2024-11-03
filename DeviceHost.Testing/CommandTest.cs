@@ -13,7 +13,7 @@ namespace DeviceHost.Testing
         [TestMethod]
         public void T01_GetPorts()
         {
-            var script = TestUtility.GetScript("Ports.txt");
+            var script = String.Format(TestUtility.GetScript("Ports.txt"), "COM3");
             Assert.IsTrue(Command.Create(script, out Command command, out string _));
 
             Assert.IsTrue(command.VerifyCommand(out string _));
