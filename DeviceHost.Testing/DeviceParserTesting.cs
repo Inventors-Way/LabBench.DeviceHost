@@ -12,7 +12,7 @@ namespace DeviceHost.Testing
     {
 
         [TestMethod]
-        public void T01_Ports()
+        public void Ports()
         {
             string script = TestUtility.GetPacket("Ports.txt");
             var parser = new CommandParser();
@@ -30,7 +30,7 @@ namespace DeviceHost.Testing
         }
 
         [TestMethod]
-        public void T02_Open()
+        public void Open()
         {
             string script = TestUtility.GetPacket("Open.txt");
             var parser = new CommandParser();
@@ -45,6 +45,18 @@ namespace DeviceHost.Testing
             Assert.IsNotNull(cmd);
             Assert.AreEqual("OPEN", cmd.Name);
             Assert.AreEqual(0, cmd.Content.Length);
+        }
+
+        [TestMethod]
+        public void CombinedCommands()
+        {
+            string script = String.Format(TestUtility.GetPackets(new string[]
+                {
+                "Open.txt",
+                "Ports.txt"
+                }), "COM3");
+            
+
         }
     }
 }

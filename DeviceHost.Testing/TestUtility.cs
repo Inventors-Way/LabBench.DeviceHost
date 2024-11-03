@@ -48,6 +48,20 @@ namespace DeviceHost.Testing
             return builder.ToString();
         }
 
+        public static string GetPackets(IEnumerable<string> names)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var name in names)
+            {
+                builder.AppendLine($"{Response.STX};");
+                builder.Append(GetScript(name));
+                builder.AppendLine($"{Response.ETX};");
+            }
+
+            return builder.ToString();
+        }
+
         public static string Send(string command)
         {
             using TcpClient client = new(serverIp, serverPort);

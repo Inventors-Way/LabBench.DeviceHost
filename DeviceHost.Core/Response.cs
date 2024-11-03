@@ -71,7 +71,7 @@ namespace DeviceHost.Core
 
         public Response Add(string name, IEnumerable<object> values)
         {
-            builder.AppendLine($"{name} {string.Join(",", values)};");
+            builder.AppendLine($"{name} {string.Join(" ", values)};");
             return this;
         }
 
