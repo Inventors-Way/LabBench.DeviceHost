@@ -211,7 +211,7 @@ CMD CLOSE;
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
-#### Mode
+#### MODE
 
 Set the operating mode of the device (1: VAS Meter enabled, 0: VAS Meter disabled):
 
