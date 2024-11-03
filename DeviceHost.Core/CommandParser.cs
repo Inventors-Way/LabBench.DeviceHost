@@ -38,6 +38,7 @@ namespace DeviceHost.Core
                             state = State.WaitingForETX;
                         }
                         break;
+
                     case State.WaitingForETX:
                         if (line == Response.ETX)
                         {
@@ -49,7 +50,6 @@ namespace DeviceHost.Core
                                 yield return ParseResult.Success(command);
 
                             state = State.WaitingForSTX;
-
                             break;
                         }
 
@@ -57,6 +57,7 @@ namespace DeviceHost.Core
                         {
                             current = new();
                             yield return ParseResult.Fail(Response.Error(ErrorCode.ParketFrammingError));
+                            break;
                         }
 
                         current.AppendLine($"{line.Trim()};");

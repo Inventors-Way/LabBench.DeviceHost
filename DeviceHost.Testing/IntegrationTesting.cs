@@ -10,7 +10,7 @@ namespace DeviceHost.Testing
     {
         private bool Enabled { get; } = true;
 
-        private void TestScript(string script)
+        private void TestScript(string script, string port)
         {
             if (!Enabled)
             {
@@ -20,7 +20,7 @@ namespace DeviceHost.Testing
 
             try
             {
-                string messageToSend = TestUtility.GetScript(script);
+                string messageToSend = String.Format(TestUtility.GetPacket(script), port);
                 Console.WriteLine("Sent:");
                 Console.WriteLine(messageToSend);
                 Console.WriteLine();
@@ -42,11 +42,11 @@ namespace DeviceHost.Testing
             var server = new DeviceServer();
             var cts = server.Start();
 
-            TestScript("Ports.txt");
-            TestScript("Open.txt");
-            TestScript("Waveform.txt");
-            TestScript("Start.txt");
-            TestScript("Close.txt");
+            TestScript("Ports.txt", "COM8");
+            TestScript("Open.txt", "COM8");
+            TestScript("Waveform.txt", "COM8");
+            TestScript("Start.txt", "COM8");
+            TestScript("Close.txt", "COM8");
 
             cts.Cancel();
             await server.Join();
