@@ -20,12 +20,12 @@ namespace DeviceHost.Testing
 
             try
             {
-                string messageToSend = String.Format(TestUtility.GetPacket(script), port);
+                string packet = String.Format(TestUtility.GetPacket(script), port);
                 Console.WriteLine("Sent:");
-                Console.WriteLine(messageToSend);
+                Console.WriteLine(packet);
                 Console.WriteLine();
 
-                string response = TestUtility.Send(messageToSend);
+                string response = TestUtility.Send(packet);
                 Console.WriteLine("Received:");
                 Console.WriteLine(response);
                 Console.WriteLine();
