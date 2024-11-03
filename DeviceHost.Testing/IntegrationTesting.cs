@@ -42,6 +42,7 @@ namespace DeviceHost.Testing
             TestScript(TestUtility.GetPacket("Ports.txt", "COM8"));
             TestScript(TestUtility.GetPacket("Create.txt", "COM8"));
             TestScript(TestUtility.GetPacket("Open.txt", "COM8"));
+            TestScript(TestUtility.GetPacket("Mode.txt", "COM8"));
             TestScript(TestUtility.GetPacket("Waveform.txt", "COM8"));
             TestScript(TestUtility.GetPacket("State.txt", "COM8"));
             TestScript(TestUtility.GetPacket("Signals.txt", "COM8"));

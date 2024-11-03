@@ -130,7 +130,6 @@ namespace DeviceHost.Core.Handlers
             if (command.Content.Length != 5)
             {
                 error = Response.Error(ErrorCode.InvalidStartCommandContent);
-
                 return false;
             }
 
@@ -151,6 +150,26 @@ namespace DeviceHost.Core.Handlers
             function.OverrideRating = overrideRating[0] != 0;
             function.Outlet01 = ParseChannel(outlet01[0]);
             function.Outlet02 = ParseChannel(outlet02[0]);
+
+            return true;
+        }
+
+        public static bool SetOperatingMode(this Command command, out SetOperatingMode function, out string error)
+        {
+            function = new SetOperatingMode();
+
+            if (command.Content.Length != 1)
+            {
+                error = Response.Error(ErrorCode.InvalidModeCommandContent);
+                return false;
+            }
+
+            var mode = new IntegerParameter(command.Content[0], 1, "RESPONSE");
+
+            if (!mode.Parse(out error)) return false;
+
+            function.Mode = mode[0] == 1 ? CPARplusCommLib.OperatingMode.RESPONSE_ENABLED : CPARplusCommLib.OperatingMode.RESPONSE_DISABLED;
+            Log.Information("CPARplus Operating mode set to: {mode}", function.Mode);
 
             return true;
         }

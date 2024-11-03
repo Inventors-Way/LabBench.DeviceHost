@@ -78,6 +78,7 @@ namespace DeviceHost.Core.Handlers
         {
             "OPEN" => Open(),
             "CLOSE" => Close(),
+            "MODE" => Mode(command),
             "STATE" => State(),
             "PING" => Ping(),
             "CLEAR" => Clear(),
@@ -92,6 +93,14 @@ namespace DeviceHost.Core.Handlers
         private string Start(Command command)
         {
             if (!command.Start(out StartStimulation function, out string error))
+                return error;
+
+            return Run(function, (function) => Response.OK());
+        }
+
+        private string Mode(Command command)
+        {
+            if (!command.SetOperatingMode(out SetOperatingMode function, out string error))
                 return error;
 
             return Run(function, (function) => Response.OK());

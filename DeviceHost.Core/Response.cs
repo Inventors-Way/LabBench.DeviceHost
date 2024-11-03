@@ -36,7 +36,8 @@ namespace DeviceHost.Core
         NoDeviceStatement,
         HandlerExists,
         UnknownDevice,
-        ParketFrammingError
+        ParketFrammingError,
+        InvalidModeCommandContent
     }
 
     public class Response
