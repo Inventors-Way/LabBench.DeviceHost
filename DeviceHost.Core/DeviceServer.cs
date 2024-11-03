@@ -66,7 +66,7 @@ namespace DeviceHost.Core
         async Task HandleClient(Socket handler, CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[65535];
-            var parser = new DeviceParser(this);
+            var parser = new CommandParser(this);
 
             try
             {

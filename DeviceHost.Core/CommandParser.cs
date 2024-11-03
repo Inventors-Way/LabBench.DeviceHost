@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DeviceHost.Core
 {
-    public class DeviceParser
+    public class CommandParser
     {
-        public DeviceParser(IDeviceServer server) =>
+        public CommandParser(IDeviceServer server) =>
             _server = server;
 
         public ParseResult Parse(string input)
@@ -58,8 +58,8 @@ namespace DeviceHost.Core
             }
         }
 
-        private IDeviceServer _server;
+        private readonly IDeviceServer _server;
         private readonly StringBuilder builder = new ();
-        private readonly Regex _commandPattern = new(@"START\s[\w]+;[\w\s;]*END;", RegexOptions.Compiled);
+        private readonly Regex _commandPattern = new(@"START;[\w\s;]*END;", RegexOptions.Compiled);
     }
 }

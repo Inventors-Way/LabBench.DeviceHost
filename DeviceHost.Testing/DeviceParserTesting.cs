@@ -16,7 +16,7 @@ namespace DeviceHost.Testing
         {
             var serverMock = TestUtility.CreateDeviceServerMock();
             string script = TestUtility.GetScript("Ports.txt");
-            var parser = new DeviceParser(serverMock);
+            var parser = new CommandParser(serverMock);
             var result = parser.Parse(script);
 
             Assert.IsTrue(result.Complete);
@@ -34,7 +34,7 @@ namespace DeviceHost.Testing
         {
             var serverMock = TestUtility.CreateDeviceServerMock();
             string script = TestUtility.GetScript("Open.txt");
-            var parser = new DeviceParser(serverMock);
+            var parser = new CommandParser(serverMock);
             var result = parser.Parse(script);
 
             Assert.IsTrue(result.Complete);
