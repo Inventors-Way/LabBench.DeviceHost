@@ -131,10 +131,10 @@ namespace DeviceHost.Core.Handlers
                     return Response.Error(ErrorCode.NoStatus);
 
                 var response = new Response();
-                response.Add("Score", RatingToInteger(status.VasScore));
-                response.Add("FinalScore", RatingToInteger(status.FinalVasScore));
-                response.Add("Button", status.StopPressed);
-                response.Add("LatchedButton", latchedButton);
+                response.Add("SCORE", RatingToInteger(status.VasScore));
+                response.Add("FINAL_SCORE", RatingToInteger(status.FinalVasScore));
+                response.Add("BUTTON", status.StopPressed);
+                response.Add("LATCHED_BUTTON", latchedButton);
                 latchedButton = false;
 
                 return response.Create();  
@@ -190,10 +190,10 @@ namespace DeviceHost.Core.Handlers
                 var response = new Response()
                     .Add("STATE", status.SystemState)
                     .Add("RESPONSE_CONNECTED", status.VasConnected)
-                    .Add("RESPONSE_OK", status.VasConnected && status.VasIsLow)
+                    .Add("RESPONSE_LOW", status.VasIsLow)
                     .Add("POWER", status.PowerOn)
                     .Add("START_POSSIBLE", status.StartPossible)
-                    .Add("CONDITION", status.Condition)
+                    .Add("STOP_CONDITION", status.Condition)
                     .Add("FINAL_PRESSURE01", PressureToInteger(status.FinalPressure01))
                     .Add("FINAL_PRESSURE02", PressureToInteger(status.FinalPressure02))
                     .Add("SUPPLY_PRESSURE_OK", !status.SupplyPressureLow)
@@ -229,7 +229,10 @@ namespace DeviceHost.Core.Handlers
                 if (_device.IsCompatible(function))
                 {
                     Log.Information("PING: {device}", device);
-                    return $"OK;{device};";
+                    var response = new Response();
+                    response.Add("DEVICE", "CPAR+");
+                    response.Add("VERSION", function.Version);
+                    return response.Create();
                 }
                 else
                 {

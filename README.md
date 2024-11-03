@@ -6,7 +6,7 @@ LabBench devices is controlled by a binary serial communication protocol [Embedd
 Using the LabBench Device Host consists of sending text commands in the form of:
 
 ```
-START 1234;
+START;
 USE PORT COM8 CPARPLUS;
 CMD PING;
 END;
@@ -15,13 +15,18 @@ END;
 To a socket whos IP address and port number if configured when starting the LabBench Device Host. If a CPAR+ device is found on COM8 the Device Host will respond with:
 
 ```
-OK;CPAR+ DUE, Rev. 1.0.1;
+START;
+DEVICE CPAR+;
+VERSION 1.0.1;
+END;
 ```
 
 In general commands will respond with either ```OK;```, ```ERR;[Error Code]```, or ```[Data from the device]```. For example, if no device was connected to COM8 the command will instead respond with:
 
 ```
-ERR;DeviceClosed;
+START
+ERR DeviceClosed;
+END
 ```
 
 For a full list of possible error codes, please see section Error Codes
@@ -54,7 +59,6 @@ The Device Host can be configured with the following command line parameters:
 
 |Parameter          | Description|
 |-------------------|-----------|
-|```-k --api-key``` | The API Key for the device host (default: 1234) |
 |```-a --address``` | The address on which to host the device host (default: 127.0.0.1 / localhost) |
 |```-p --port```    | The port on which to bind the device host (default: 9797) |
 |```-l --log-file```| Log File to which to write the log, if left out the log will only be written to console. |
@@ -64,33 +68,29 @@ Help for these can also be shown by calling the devhost with a ```--help``` para
 
 ## Using the DeviceHost from 3rd party software
 
+### General format for data set to and from the Device Host
+
+All commands and response to commands are sent in the form of packets that are started and ended with START and END statements, respectively:
+
+```
+START;
+{PACKET CONTENT}
+END;
+```
+
 ### General format for commands
 
 The general format for all commands is shown below:
 
 ```
-START [API-KEY];
 USE [SYSTEM] {PORT} {DEVICE};
 CMD [COMMAND];
 {COMMAND STATEMENTS}
-END;
 ```
 
 This format consists of a list of statements each terminated by a semicoloon ```;```. The ```[]``` notation means a part that is mandatory and must be specified for all commands, and the ```{}``` specifies a part that is only mandatory for certain types of systems or commands.
 
 **Please note, that currently the socket must be closed and reopened between each command sent to the DeviceHost. This is due to a [bug](https://github.com/Inventors-Way/LabBench.DeviceHost/issues/1) that will be fixed.**
-
-#### START Statement
-
-All commands must start with a START Statement of the form:
-
-```
-START [API-KEY];
-```
-
-Where the ```[API-KEY]``` is configured when the device host is envoked. Commands send to the Device Host with a wrong API key will not be executed. However, for security purposes the Device Host will in the case of a wrong API key pretent it was successfull and respond with a ```OK;``` response. 
-
-Please monitor the log, where an error will be displayed, if you suspect that this is the case for your 3rd party software.
 
 #### USE Statement
 
@@ -122,14 +122,6 @@ CMD [COMMAND];
 
 For the set of possible commands, please see the description of the SYSTEM and CPARPLUS systems.
 
-#### END Statement
-
-All commands must end with an END statement in the following format:
-
-```
-END;
-```
-
 ### Connecting to the device host
 
 To connect to the DeviceHost, open an http socket with UTF8 encoding to address and port configured when the DeviceHost was started. If no parameters are specified this will be ```127.0.0.1:9797```.
@@ -153,16 +145,17 @@ If the DeviceHost is closed from the command line, then step 4 + 5 is optional, 
 List the COM ports:
 
 ```
-START [API-KEY]; 
 USE SERVER;
 CMD PORTS;
-END;
 ```
 
-**Response:** This command will return a semicollon seperated list of COM ports in the form of:
+**Response:** This command will return a a list of COM ports in the form of:
 
 ```
-COM1;COM2
+PORT {Port Name 1}
+PORT {Port Name 2}
+...
+PORT {Port Name N}
 ```
 
 #### CREATE
@@ -170,12 +163,10 @@ COM1;COM2
 Create a device handler on a given ```[PORT]``` port and ```[DEVICETYPE]``` device type:
 
 ```
-START 1234;
 USE SERVER;
 CMD CREATE;
 PORT [PORT]; 
 DEVICE [DEVICETYPE];
-END;
 ```
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
@@ -189,11 +180,9 @@ Parameters:
 Delete a device handler on a given ```[PORT]``` port:
 
 ```
-START 1234;
 USE SERVER;
 CMD DELETE;
 PORT [PORT];
-END;
 ```
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
@@ -207,10 +196,8 @@ END;
 Open the COM port to allow commands to be send to a device:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD OPEN;
-END;
 ```
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
@@ -220,23 +207,33 @@ END;
 Close the COM port:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD CLOSE;
-END;
 ```
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
+
+#### Mode
+
+Set the operating mode of the device (1: VAS Meter enabled, 0: VAS Meter disabled):
+
+```
+USE PORT [PORT] CPARPLUS;
+CMD MODE;
+RESPONSE {Enabled}
+```
+
+Where {Enabled} determines whether the VAS meter is enabled or not.
+
+**Response::** **Response:** ```OK;[DEVICETYPE]``` if successfull, otherwise ```ERR;[ERRORCODE]```.
 
 #### PING
 
 Will ping a device and check that it has the correct type as expected by the created handler:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD PING;
-END;
 ```
 
 Please, note if the port is not openend it will result in an error.
@@ -248,7 +245,6 @@ Please, note if the port is not openend it will result in an error.
 The CPARPLUS device can have up to two waveform channels that each can be routed to one or both of the two pressure outlets of the device. These programs consists of a series of instructions STEP, INC, and DEC that changes the current output pressure. To prevent errors such as infinite loops there are no brancing instructions. However, it is possible to repeat a program set number of times.
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD WAVEFORM;
 CHANNEL [CHANNEL];
@@ -257,7 +253,6 @@ INSTRUCTIONS [INSTRUCTIONS];
 STEP [PRESSURE] [DURATION];
 INC [DELTAPRESSURE] [DURATION];
 DEC [DELTAPRESSURE] [DURATION];
-END;
 ```
 
 **Parameters**:
@@ -276,10 +271,8 @@ END;
 Will clear all waveform programs:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD CLEAR;
-END;
 ```
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
@@ -290,7 +283,6 @@ END;
 Will start a pressure stimulation with the currently set pressure WAVEFORM programs:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD START;
 STOPCRITERION [STOPCRITERION];
@@ -298,7 +290,6 @@ EXTERNALTRIGGER [EXTERNALTRIGGER];
 OVERRIDERATING [OVERRIDERATING];
 OUTLET01 [WAVEFORM];
 OUTLET02 [WAVEFORM];
-END;
 ```
 
 **Parameters**:
@@ -315,10 +306,8 @@ END;
 Stops any active pressure stimulation:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD STOP;
-END;
 ```
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR;[ERRORCODE]```.
@@ -330,25 +319,23 @@ Please note, if the intention is to stop a stimulation, no harm will come from e
 Return the state of the device:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD STATE;
-END;
 ```
 
 If successfull it will return the state of the device in the form of:
 
 ```
-State [STATE];
-VasConnected [0 or 1];
-VasIsLow [0 or 1];
-PowerOn [0 or 1];
-StartPossible [0 or 1];
-Condition [0 or 1];
-FinalPressure01 [PRESSURE];
-FinalPressure02 [PRESSURE];
-SupplyPressureLow [0 or 1];
-SupplyPressure [PRESSURE];
+STATE [STATE];
+RESPONSE_CONNECTED [0 or 1];
+RESPONSE_LOW [0 or 1];
+POWER [0 or 1];
+START_POSSIBLE [0 or 1];
+STOP_CONDITION [0 or 1];
+FINAL_PRESSURE01 [PRESSURE];
+FINAL_PRESSURE02 [PRESSURE];
+SUPPLY_PRESSURE_OK [0 or 1];
+SUPPLY_PRESSURE [PRESSURE];
 ```
 
 **Values**:
@@ -365,20 +352,19 @@ or an error in the form of ```ERR;[ERRORCODE]```.
 Returns pressures and ratings since last execution of the SIGNALS command:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD SIGNALS;
-END;
 ```
 
 If successfull it will return the state of the device in the form of:
 
 ```
-Pressure01;Pressure02;Rating;
-{Pressure, Pressure, Rating;}
+DATA Pressure01 Pressure02 Rating;
 ```
 
-Please note, if no pressures are available there will be no values after the header.
+The DATA lines is repeated for as many samples that has been cached from the device. Once the data is sent the cache is emptied and it is the responsibility of the client to store the data.
+
+Please note, if no pressures are available there the Device Host will return an empty START/END packet.
 
 **Values**:
 * ```{Pressure}```: Pressure in kPa multiplied by 10.
@@ -391,27 +377,25 @@ or an error in the form of ```ERR;[ERRORCODE]```.
 Will return the current ratings:
 
 ```
-START 1234;
 USE PORT [PORT] CPARPLUS;
 CMD RATING;
-END;
 ```
 
 If successfull it will return the state of the device in the form of:
 
 ```
-VasScore [0 to 100];
-FinalVasScore [0 to 100];
-Button [0 or 1];
-LatchedButton [0 or 1];
+SCORE [0 to 100];
+FINAL_SCORE [0 to 100];
+BUTTON [0 or 1];
+LATCHED_BUTTON [0 or 1];
 ```
 
 **Values:**
 
-* VasScore: The curreent VAS scopre in mm.
-* FinalVasScore: The VAS score when either the STOPCRITERION was fullfilled or at the comperion of the pressure WAVEFORM programs.
-* Button: Current state of the button. 0: No button pressed, 1: One or more button pressed.
-* LatchedButton: Has a button been pressed since the last execution of the RATING command.
+* SCORE: The curreent VAS scopre in mm.
+* FINAL_SCORE: The VAS score when either the STOPCRITERION was fullfilled or at the comperion of the pressure WAVEFORM programs.
+* BUTTON: Current state of the button. 0: No button pressed, 1: One or more button pressed.
+* LATCHED_BUTTON: Has a button been pressed since the last execution of the RATING command.
 
 or an error in the form of ```ERR;[ERRORCODE]```.
 
@@ -446,4 +430,7 @@ or an error in the form of ```ERR;[ERRORCODE]```.
 |NoDeviceStatement| |
 |HandlerExists| |
 |UnknownDevice| |
+|ParketFrammingError| |
+|InvalidModeCommandContent| |
+
 
