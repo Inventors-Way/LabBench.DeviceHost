@@ -1,4 +1,5 @@
 ﻿using Inventors.ECP.Profiling;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,56 +11,57 @@ namespace DeviceHost.Core
 {
     public class CommandParser
     {
-        public CommandParser(IDeviceServer server) =>
-            _server = server;
-
-        public ParseResult Parse(string input)
+        private enum State
         {
-            builder.Append(input);
-            var content = builder.ToString();
+            WaitingForSTX,
+            WaitingForETX            
+        }
 
-            if (!_commandPattern.IsMatch(content))
-                return new ParseResult();
 
-            var matches = _commandPattern.Matches(content);
-            var response = new StringBuilder();
+        private StringBuilder current = new();
+        private State state = State.WaitingForSTX;
 
-            foreach (var match in matches)
+        public static string[] GetLines(string input) =>
+            input.Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.RemoveEmptyEntries);
+        
+        public IEnumerable<ParseResult> Parse(string input)
+        {
+            foreach (var line in GetLines(input))
             {
-                try
+                switch (state)
                 {
-                    if (match is not Match command)
+                    case State.WaitingForSTX:
+                        if (line == Response.STX)
+                        {
+                            current = new();
+                            state = State.WaitingForETX;
+                        }
                         break;
+                    case State.WaitingForETX:
+                        if (line == Response.ETX)
+                        {
+                            var commandContent = current.ToString();
 
-                    response.AppendLine(ParseCommand(command.Value));
+                            if (!Command.Create(commandContent, out Command command, out string error))
+                            {
+                                yield return ParseResult.Fail(error);
+                                break;
+                            }
+                            yield return ParseResult.Success(command);
+
+                            break;
+                        }
+
+                        if (line == Response.STX)
+                        {
+                            current = new();
+                            yield return ParseResult.Fail(Response.Error(ErrorCode.ParketFrammingError));
+                        }
+
+                        current.AppendLine(line);
+                        break;
                 }
-                catch (Exception ex)
-                {
-                    response.AppendLine(ex.Message);
-                }
-            }
-
-            builder.Clear();
-            return new ParseResult(response.ToString());
-        }
-
-        public string ParseCommand(string content)
-        {
-            if (!Command.Create(content, out Command command, out string errorMessage))
-                return errorMessage;
-
-            if (_server.GetHandler(command) is IDeviceHandler handler)
-            {
-                return handler.Execute(command);
-            }
-            else
-            {
-                return Response.Error(ErrorCode.NoHandlerFound);
             }
         }
-
-        private readonly IDeviceServer _server;
-        private readonly StringBuilder builder = new ();
-        private readonly Regex _commandPattern = new(@"START;[\w\s;]*END;", RegexOptions.Compiled);
     }
 }

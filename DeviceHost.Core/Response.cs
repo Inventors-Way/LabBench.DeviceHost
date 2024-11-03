@@ -35,16 +35,20 @@ namespace DeviceHost.Core
         NoPortStatement,
         NoDeviceStatement,
         HandlerExists,
-        UnknownDevice
+        UnknownDevice,
+        ParketFrammingError
     }
 
     public class Response
     {
         private readonly StringBuilder builder = new();
 
+        public static string STX => "START;";
+        public static string ETX => "END;";
+
         public Response()
         {
-            builder.AppendLine($"START;");
+            builder.AppendLine(STX);
         }
 
         public Response Add(string name)
@@ -73,7 +77,7 @@ namespace DeviceHost.Core
 
         public string Create()
         {
-            builder.AppendLine("END;");
+            builder.AppendLine(ETX);
             return builder.ToString();
         }
 

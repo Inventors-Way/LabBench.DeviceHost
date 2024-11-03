@@ -16,7 +16,7 @@ namespace DeviceHost.Testing
         {
             var serverMock = TestUtility.CreateDeviceServerMock();
             string script = TestUtility.GetScript("Ports.txt");
-            var parser = new CommandParser(serverMock);
+            var parser = new CommandParser();
             var result = parser.Parse(script);
 
             Assert.IsTrue(result.Complete);

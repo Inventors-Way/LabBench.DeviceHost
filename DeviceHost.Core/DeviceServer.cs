@@ -66,40 +66,48 @@ namespace DeviceHost.Core
         async Task HandleClient(Socket handler, CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[65535];
-            var parser = new CommandParser(this);
+            var parser = new CommandParser();
 
             try
             {
-                try
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    while (!cancellationToken.IsCancellationRequested)
+                    int bytesReceived = await handler.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cancellationToken);
+
+                    if (bytesReceived == 0)
+                        break;
+
+                    string data = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
+                    StringBuilder response = new();
+
+                    foreach (var result in parser.Parse(data))
                     {
-                        int bytesReceived = await handler.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cancellationToken);
-
-                        if (bytesReceived == 0)
-                            break;
-
-                        string data = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
-
-                        var response = parser.Parse(data);
-
-                        if (response.Complete)
+                        if (result.IsSuccess)
                         {
-                            byte[] responseBytes = Encoding.UTF8.GetBytes(response.Response);
-                            await handler.SendAsync(new ArraySegment<byte>(responseBytes), SocketFlags.None);
+                            if (result.Command is null)
+                                continue;
+
+                            if (GetHandler(result.Command) is not IDeviceHandler deviceHandler)
+                            {
+                                response.Append(Response.Error(ErrorCode.NoHandlerFound));
+                                continue;
+                            }
+
+                            response.Append(deviceHandler.Execute(result.Command));
+                        }
+                        else
+                        {
+                            response.Append(result.Error);
                         }
                     }
-                }
-                catch (OperationCanceledException)
-                {
 
+                    byte[] responseBytes = Encoding.UTF8.GetBytes(response.ToString());
+                    await handler.SendAsync(new ArraySegment<byte>(responseBytes), SocketFlags.None);
                 }
-                finally
-                {
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
-                    Log.Information("Client disconnected.");
-                }
+            }
+            catch (OperationCanceledException)
+            {
+
             }
             catch (Exception ex)
             {
@@ -111,18 +119,17 @@ namespace DeviceHost.Core
             }
         }
 
-        public async Task Join()
-        {
+        public async Task Join() =>
             await Task.Run(async () =>
             {
                 while (Running)
                     await Task.Delay(10);
             });
-        }
 
         #region IDeviceServer
 
-        public IDeviceHandler? GetHandler(Command command) => _handler.GetHandler(command);
+        public IDeviceHandler? GetHandler(Command command) =>
+            _handler.GetHandler(command);
 
         public void Cleanup() => _handler.Cleanup();
 
