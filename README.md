@@ -262,7 +262,7 @@ DEC [DELTAPRESSURE] [DURATION];
 
 **Parameters**:
 
-* ```[CHANNEL]```: Channel for which to set the program (valid values: 0 for Channel 1 or 1: for Channel 2)
+* ```[CHANNEL]```: Waveform program channel for which to set the program (valid values: 0 or 1)
 * ```[REPEAT]```: Number of times to repeat the program
 * ```[INSTRUCTIONS]```: Number of subsequent instructions, must be equal to the number of instructions after the INSTRUCTIONS statement.
 * ```[PRESSURE]```: Pressure to set for the STEP command, is the pressure in kPa multiplied by 10. E.g. 500 is equal to 50kPa.
@@ -273,7 +273,7 @@ DEC [DELTAPRESSURE] [DURATION];
 
 #### CLEAR
 
-Will clear all waveform programs:
+Will clear all waveform programs in all waveform program channels:
 
 ```
 USE PORT [PORT] CPARPLUS;
@@ -297,12 +297,14 @@ OUTLET01 [WAVEFORM];
 OUTLET02 [WAVEFORM];
 ```
 
+Please note that there are two waveform program channel (0 and 1) which can be updated with the WAVEFORM command. The OUTLET01 and OUTLET02 parameter controls which waveform program channel is routed to each pressure outlet on the front of the CPAR+ device. A zero value for OUTLET01 or OUTLET02 means that no waveform program is routed to the outlet and that it will be inactive during the stimulation. If when set to 1 or 2 then Waveform Program Channel 0 or 1 is routed, respectively. The same waveform program channel may be routed to both outlets if the same pressure is to be applied to both outlets.
+
 **Parameters**:
 
 * ```[STOPCRITERION]```: 0: STOP_CRITERION_ON_BUTTON_VAS the pressure stimulation will stop when VAS 10 is scored or a button is pressed, 1: STOP_CRITERION_ON_BUTTON_PRESSED the pressure stimulation will stop when a button is pressed, 2: STOP_CRITERION_ON_BUTTON_RELEASED the pressure stimulation will stop when a button is released. In all cases the stimulation will automatically stop when all pressure WAVEFORM programs have completed.
 * ```[EXTERNALTRIGGER]```: If set to 0 the stimulation will start immediately, if set to 1 the stimulation will start when a trigger is received on the TRIG IN connection on the device.
 * ```[OVERRIDERATING]```: If set to 0 the stimulation will not start if VAS != 0, if set to 1 the stimulation will start regardless of the current VAS rating. 
-* ```[WAVEFORM]```: Which WAVEFORM program is routed to the pressure outlet. 0: None, 1: Channel 1, 2: Channel 2.
+* ```[WAVEFORM]```: Which WAVEFORM program is routed to the pressure outlet. 0: None, 1: Waveform Program Channel 0, 2: Waveform Program Channel 1.
 
 **Response:** ```OK;``` if successfull, otherwise ```ERR [ERRORCODE]```.
 
